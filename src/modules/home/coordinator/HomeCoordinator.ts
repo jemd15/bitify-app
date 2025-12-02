@@ -1,11 +1,11 @@
-import { router } from "expo-router";
+import { router } from 'expo-router';
 
 export class HomeCoordinator {
   /**
    * Navigate to home screen
    */
   static navigateToHome() {
-    router.push("/(tabs)/home");
+    router.push('/(tabs)/home');
   }
 
   /**
@@ -16,5 +16,3 @@ export class HomeCoordinator {
     console.log(`Navigating to section: ${section}`);
   }
 }
-
-

@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { HOME_CONSTANTS } from "../constants/home.constants";
-import type { HomeScreenProps } from "../types/home.types";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+import { HOME_CONSTANTS } from '../constants/home.constants';
+import type { HomeScreenProps } from '../types/home.types';
 
 export const HomeScreen: React.FC<HomeScreenProps> = () => {
   return (
@@ -14,20 +15,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
+  },
+  subtitle: {
+    color: '#666',
+    fontSize: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-  },
 });
-
-

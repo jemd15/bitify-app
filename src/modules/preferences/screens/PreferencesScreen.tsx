@@ -1,6 +1,7 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { PREFERENCES_CONSTANTS } from "../constants/preferences.constants";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+import { PREFERENCES_CONSTANTS } from '../constants/preferences.constants';
 
 export const PreferencesScreen: React.FC = () => {
   return (
@@ -13,20 +14,18 @@ export const PreferencesScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
+  },
+  subtitle: {
+    color: '#666',
+    fontSize: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-  },
 });
-
-

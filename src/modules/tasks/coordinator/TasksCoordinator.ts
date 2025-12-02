@@ -1,18 +1,18 @@
-import { router } from "expo-router";
+import { router } from 'expo-router';
 
 export class TasksCoordinator {
   /**
    * Navigate to tasks list screen
    */
   static navigateToTasksList() {
-    router.push("/(tabs)/tasks");
+    router.push('/(tabs)/tasks');
   }
 
   /**
    * Navigate to create task screen
    */
   static navigateToCreateTask() {
-    router.push("/tasks/create");
+    router.push('/tasks/create');
   }
 
   /**
@@ -20,7 +20,7 @@ export class TasksCoordinator {
    */
   static navigateToTaskDetail(taskId: string) {
     router.push({
-      pathname: "/tasks/[id]",
+      pathname: '/tasks/[id]',
       params: { id: taskId },
     });
   }
@@ -32,5 +32,3 @@ export class TasksCoordinator {
     router.back();
   }
 }
-
-

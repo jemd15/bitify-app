@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { ACCOUNT_CONSTANTS } from "../constants/account.constants";
-import type { ProfileScreenProps } from "../types/account.types";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+import { ACCOUNT_CONSTANTS } from '../constants/account.constants';
+import type { ProfileScreenProps } from '../types/account.types';
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
   return (
@@ -14,20 +15,18 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
+  },
+  subtitle: {
+    color: '#666',
+    fontSize: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-  },
 });
-
-
