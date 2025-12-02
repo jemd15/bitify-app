@@ -1,8 +1,5 @@
-import { View, Text } from "react-native";
-export default function Home() {
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Bienvenido a Bitify</Text>
-    </View>
-  );
+import { Redirect } from "expo-router";
+
+export default function Index() {
+  return <Redirect href="/(tabs)/home" />;
 }

@@ -1,14 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { ACCOUNT_CONSTANTS } from "../constants/account.constants";
+import type { ProfileScreenProps } from "../types/account.types";
 
-export const HouseDetailScreen: React.FC = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
-
+export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>House Detail</Text>
-      <Text style={styles.subtitle}>House ID: {id}</Text>
+      <Text style={styles.title}>{ACCOUNT_CONSTANTS.PROFILE_TITLE}</Text>
+      <Text style={styles.subtitle}>User profile information</Text>
     </View>
   );
 };

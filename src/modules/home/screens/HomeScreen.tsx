@@ -1,14 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { HOME_CONSTANTS } from "../constants/home.constants";
+import type { HomeScreenProps } from "../types/home.types";
 
-export const HouseDetailScreen: React.FC = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
-
+export const HomeScreen: React.FC<HomeScreenProps> = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>House Detail</Text>
-      <Text style={styles.subtitle}>House ID: {id}</Text>
+      <Text style={styles.title}>{HOME_CONSTANTS.TITLE}</Text>
+      <Text style={styles.subtitle}>{HOME_CONSTANTS.SUBTITLE}</Text>
     </View>
   );
 };
