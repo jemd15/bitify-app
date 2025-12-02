@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "env:dev": "copy /Y env\\.env.development .env",
-    "env:prod": "copy /Y env\\.env.prod .env",
+    "env:dev": "cmd /c copy /Y \"env\\.env.development\" \".env\"",
+    "env:prod": "cmd /c copy /Y \"env\\.env.prod\" \".env\"",
     "start": "expo start --go",
     "start:dev": "bun run env:dev && bun run start",
     "start:prod": "bun run env:prod && bun run start",
