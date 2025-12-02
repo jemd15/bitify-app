@@ -3,16 +3,26 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "expo start",
+    "env:dev": "copy /Y env\\.env.development .env",
+    "env:prod": "copy /Y env\\.env.prod .env",
+    "start": "expo start --go",
+    "start:dev": "bun run env:dev && bun run start",
+    "start:prod": "bun run env:prod && bun run start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.0",
+    "@tanstack/react-query": "^5.90.11",
+    "@tanstack/react-query-devtools": "^5.91.1",
     "expo": "~54.0.25",
+    "expo-router": "^6.0.15",
     "expo-status-bar": "~3.0.8",
     "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react-native": "0.81.5",
+    "react-native-web": "^0.21.0",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
