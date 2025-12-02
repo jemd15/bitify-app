@@ -2,6 +2,7 @@
   "name": "bitify",
   "version": "1.0.0",
   "main": "index.ts",
+  "type": "module",
   "scripts": {
     "env:dev": "cmd /c copy /Y \"env\\.env.development\" \".env\"",
     "env:prod": "cmd /c copy /Y \"env\\.env.prod\" \".env\"",
@@ -10,7 +11,11 @@
     "start:prod": "bun run env:prod && bun run start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.86.0",
@@ -31,6 +36,17 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-native": "^5.0.0",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "prettier": "^3.7.3",
     "typescript": "~5.9.2"
   },
   "private": true
