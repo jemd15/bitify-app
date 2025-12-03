@@ -5,3 +5,4 @@ export interface HomeScreenProps {
 export interface HomeNavigationParams {
   // Navigation parameters for home module
 }
+

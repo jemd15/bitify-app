@@ -36,3 +36,4 @@ export class AccountCoordinator {
     router.back();
   }
 }
+

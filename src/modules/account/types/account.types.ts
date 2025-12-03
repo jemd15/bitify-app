@@ -5,3 +5,4 @@ export interface AccountScreenProps {
 export interface ProfileScreenProps {
   // Props for ProfileScreen component
 }
+

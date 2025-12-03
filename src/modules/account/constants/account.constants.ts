@@ -3,3 +3,4 @@ export const ACCOUNT_CONSTANTS = {
   SETTINGS_TITLE: 'Settings',
   AUTH_TITLE: 'Authentication',
 } as const;
+
