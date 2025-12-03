@@ -573,11 +573,23 @@ La carpeta `shared/` contiene código que se usa en múltiples módulos. Es cód
 
 ```
 shared/
-├── components/        # Componentes base reutilizables (Button, Input, Card)
-├── hooks/             # Hooks reutilizables (useAuthSession, useErrorHandler)
+├── components/        # Componentes base reutilizables (Button, Input, Card, ErrorBoundary, etc.)
+├── hooks/             # Hooks reutilizables (useTimer, useGetTimeAgo, useAppState, etc.)
 ├── types/             # Tipos compartidos (errors.types.ts)
 ├── constants/         # Constantes globales (errorMessages.ts)
-├── utils/             # Utilidades compartidas (errorTransformers.ts)
+├── utils/             # Utilidades compartidas (stringHelpers, urlHelpers, etc.)
+├── storage/           # Sistema de storage persistente tipado
+│   ├── index.ts       # Clase Storage y exportaciones
+│   ├── schema.ts      # Schemas TypeScript
+│   └── hooks/
+│       └── useStorage.ts
+├── logger/            # Sistema de logging
+│   ├── index.ts       # Exportación principal
+│   ├── Logger.ts      # Clase Logger
+│   ├── types.ts       # Tipos del logger
+│   ├── util.ts        # Utilidades
+│   └── transports/
+│       └── console.ts  # Transport de consola
 └── styles/            # Estilos compartidos
 ```
 
@@ -1369,6 +1381,35 @@ export const filterTasksByStatus = (tasks: Task[], status: TaskStatus): Task[] =
 - Componentes de UI base (Button, Input, Card, etc.)
 - Componentes de layout
 
+**Componentes Disponibles**:
+
+- **`Button`**: Botón con variantes (solid, outline, ghost) y colores (primary, secondary, danger)
+- **`Input`**: Campo de texto con label y manejo de errores
+- **`ErrorBoundary`**: Boundary para capturar errores de React
+- **`ErrorScreen`**: Pantalla de error con opción de reintentar
+- **`Divider`**: Separador visual
+- **`LoadingSpinner`**: Indicador de carga
+- **`Skeleton`**: Componentes skeleton para loading states (SkeletonText, SkeletonCircle, SkeletonPill)
+- **`Card`**: Contenedor con sombra
+- **`Toast`**: Sistema de notificaciones toast con tipos (default, success, error, warning, info)
+
+**Importación**:
+
+```typescript
+import {
+  Button,
+  Input,
+  ErrorBoundary,
+  ErrorScreen,
+  Divider,
+  LoadingSpinner,
+  SkeletonText,
+  Card,
+  ToastContainer,
+  showToast,
+} from '@shared/components';
+```
+
 ### Documentación de Componentes Compartidos
 
 Todos los componentes compartidos deben estar documentados con:
@@ -1519,6 +1560,28 @@ Mantener un archivo `shared/components/README.md` con lista de todos los compone
 - Hooks de utilidad general
 - Hook de manejo de errores (`useErrorHandler.ts`) - Ver sección "Manejo de Errores"
 
+**Hooks Disponibles**:
+
+- **`useTimer`**: Timer con funciones de reset y cancel
+- **`useDedupe`**: Deduplicación de llamadas con timeout configurable
+- **`useGetTimeAgo`**: Formateo de fechas relativas (usa `date-fns`)
+- **`useAppState`**: Estado de la app (foreground/background)
+- **`useIsKeyboardVisible`**: Visibilidad del teclado
+- **`useCleanError`**: Limpieza de mensajes de error para mostrar al usuario
+
+**Importación**:
+
+```typescript
+import {
+  useTimer,
+  useDedupe,
+  useGetTimeAgo,
+  useAppState,
+  useIsKeyboardVisible,
+  useCleanError,
+} from '@shared/hooks';
+```
+
 ### Shared Types
 
 **Ubicación**: `src/shared/types/`
@@ -1550,6 +1613,32 @@ Mantener un archivo `shared/components/README.md` con lista de todos los compone
 - Helpers de formato
 - Utilidades de validación general
 - Transformadores de errores (`errorTransformers.ts`)
+
+**Utilidades Disponibles**:
+
+- **`enforceLen`**: Limitar longitud de strings con opción de ellipsis
+- **`useEnforceMaxGraphemeCount`**: Hook para limitar conteo de grafemas (usa `graphemer`)
+- **`countLines`**: Contar líneas en un string
+- **`capitalize`**: Capitalizar primera letra de un string
+- **`isValidDomain`**: Validar si un string es un dominio válido
+- **`getHostnameFromUrl`**: Extraer hostname de una URL
+- **`isRelativeUrl`**: Verificar si una URL es relativa
+- **`isExternalUrl`**: Verificar si una URL es externa
+
+**Importación**:
+
+```typescript
+import {
+  enforceLen,
+  useEnforceMaxGraphemeCount,
+  countLines,
+  capitalize,
+  isValidDomain,
+  getHostnameFromUrl,
+  isRelativeUrl,
+  isExternalUrl,
+} from '@shared/utils';
+```
 
 ## Storage Persistente Tipado
 
@@ -2906,10 +2995,14 @@ shared/logger/
 ├── index.ts              # Exportación principal del logger
 ├── Logger.ts             # Clase Logger principal
 ├── transports/           # Transports (consola, archivo, etc.)
-│   ├── console.ts       # Transport de consola
-│   └── file.ts          # Transport de archivo (opcional)
-└── types.ts              # Tipos del logger
+│   └── console.ts       # Transport de consola
+├── types.ts              # Tipos del logger
+└── util.ts               # Utilidades del logger
 ```
+
+**Transport Disponible**:
+
+- **`consoleTransport`**: Transport de consola para desarrollo. Los logs se muestran en la consola con colores y formato según el nivel.
 
 ### Niveles de Log
 
@@ -3226,6 +3319,11 @@ const handleSubmit = (data: FormData) => {
 - **@react-native-async-storage/async-storage**: AsyncStorage para React Native (usado en React Query persist)
 - **@tanstack/query-async-storage-persister**: Persister de React Query para AsyncStorage
 - **@tanstack/react-query-persist-client**: Cliente persistente de React Query
+
+### Utilidades
+
+- **date-fns ^3.0.0**: Librería de utilidades para fechas. Usada en `useGetTimeAgo` para formateo de fechas relativas.
+- **graphemer ^1.4.0**: Librería para conteo de grafemas Unicode. Usada en `useEnforceMaxGraphemeCount` para limitar correctamente la longitud de strings con caracteres especiales.
 
 ### Red y Conectividad
 
@@ -4641,7 +4739,7 @@ Al testear optimistic updates:
 
 ### Librería: Lingui
 
-Bitify utiliza **Lingui** para la internacionalización, siguiendo el mismo patrón que `social-app`. El idioma principal es **español** y el secundario es **inglés**.
+Bitify utiliza **Lingui** para la internacionalización. El idioma principal es **español** y el secundario es **inglés**.
 
 **Librerías**:
 

@@ -1,0 +1,2 @@
+export {useStorage} from '../index'
+
