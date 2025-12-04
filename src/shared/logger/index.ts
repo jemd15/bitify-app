@@ -1,5 +1,6 @@
-export {Logger} from './Logger'
-export {LogLevel, LogContext, type Metadata, type Transport} from './types'
+import { Logger } from './Logger';
+
+export { LogLevel, LogContext, type Metadata, type Transport } from './types';
 
 /**
  * Default logger instance.
@@ -12,5 +13,4 @@ export {LogLevel, LogContext, type Metadata, type Transport} from './types'
  *   `logger.warn(message[, metadata])`
  *   `logger.error(error[, metadata])`
  */
-export const logger = Logger.create(Logger.Context.Default)
-
+export const logger = Logger.create(Logger.Context.Default);

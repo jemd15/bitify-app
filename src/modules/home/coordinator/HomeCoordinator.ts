@@ -16,4 +16,3 @@ export class HomeCoordinator {
     console.log(`Navigating to section: ${section}`);
   }
 }
-

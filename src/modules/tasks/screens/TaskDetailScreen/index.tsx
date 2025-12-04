@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
-import { TASKS_CONSTANTS } from '../constants/tasks.constants';
+import { TASKS_CONSTANTS } from '../../constants/tasks.constants';
+import { styles } from './styles';
 
 export const TaskDetailScreen: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -14,22 +15,3 @@ export const TaskDetailScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  subtitle: {
-    color: '#666',
-    fontSize: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-});
-

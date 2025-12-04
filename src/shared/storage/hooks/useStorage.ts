@@ -1,2 +1,1 @@
-export {useStorage} from '../index'
-
+export { useStorage } from '../index';

@@ -1077,9 +1077,13 @@ modules/{module}/
 ```
 modules/{module}/
 ├── components/           # Componentes específicos del módulo
-│   └── {Component}.tsx
+│   └── {Component}/
+│       ├── index.tsx
+│       └── styles.ts
 ├── screens/              # Pantallas del módulo
-│   └── {Screen}Screen.tsx
+│   └── {Screen}Screen/
+│       ├── index.tsx
+│       └── styles.ts
 ├── hooks/                # Hooks personalizados
 │   ├── use{Entity}List.ts
 │   ├── use{Entity}Detail.ts
@@ -1116,17 +1120,36 @@ modules/{module}/
 - NO deben contener lógica de negocio
 - Deben recibir datos ya procesados vía props
 
+**Estructura con subcarpetas (obligatoria)**:
+
+- Cada componente debe tener su propia subcarpeta
+- Estructura: `ComponentName/index.tsx` y `ComponentName/styles.ts`
+- El archivo principal se llama `index.tsx` para facilitar imports
+- El archivo de estilos se llama `styles.ts` (sin prefijo del componente, ya que está encapsulado)
+
 **Convenciones**:
 
 - Nombres en PascalCase
 - Props tipadas con interfaces TypeScript
-- Estilos en archivos separados o usando StyleSheet
+- **Estilos SIEMPRE en archivos separados** (ver sección "Estilos")
 - Componentes deben ser funcionales (no clases)
+
+**Regla importante**:
+
+- Si un componente necesita otros componentes, deben importarse de:
+  - `components/` del módulo correspondiente
+  - `@shared/components/`
+- NO crear componentes internos dentro de la subcarpeta del componente
 
 **Ejemplo**:
 
 ```typescript
-// modules/tasks/components/TaskCard.tsx
+// modules/tasks/components/TaskCard/index.tsx
+import React from 'react';
+import { View, Text } from 'react-native';
+import { Button } from '@shared/components/Button';
+import { styles } from './styles';
+
 interface TaskCardProps {
   task: Task;
   onPress: (taskId: string) => void;
@@ -1136,10 +1159,27 @@ interface TaskCardProps {
 export const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onComplete }) => {
   return (
     <View style={styles.container}>
-      {/* ... */}
+      <Text style={styles.title}>{task.title}</Text>
+      <Button title="Completar" onPress={() => onComplete(task.id)} />
     </View>
   );
 };
+```
+
+```typescript
+// modules/tasks/components/TaskCard/styles.ts
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
 ```
 
 ### Screens
@@ -1151,6 +1191,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onComplete })
 - Manejo de estados de carga y error
 - Integración con hooks de datos
 
+**Estructura con subcarpetas (obligatoria)**:
+
+- Cada screen debe tener su propia subcarpeta
+- Estructura: `ScreenName/index.tsx` y `ScreenName/styles.ts`
+- El archivo principal se llama `index.tsx` para facilitar imports
+- El archivo de estilos se llama `styles.ts` (sin prefijo del screen, ya que está encapsulado)
+
 **Convenciones**:
 
 - Nombres terminan en "Screen"
@@ -1158,25 +1205,53 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onComplete })
 - Manejan estados de loading, error y success
 - Usan coordinadores para navegación
 
+**Regla importante**:
+
+- Si una screen necesita otros componentes, deben importarse de:
+  - `components/` del módulo correspondiente
+  - `@shared/components/`
+- NO crear componentes internos dentro de la subcarpeta del screen
+
 **Ejemplo**:
 
 ```typescript
-// modules/tasks/screens/TasksListScreen.tsx
+// modules/tasks/screens/TasksListScreen/index.tsx
+import React from 'react';
+import { View } from 'react-native';
+import { useTasksList } from '../../hooks/useTasksList';
+import { TasksCoordinator } from '../../coordinator/TasksCoordinator';
+import { TaskCard } from '../../components/TaskCard';
+import { LoadingSpinner } from '@shared/components/LoadingSpinner';
+import { ErrorScreen } from '@shared/components/ErrorScreen';
+import { styles } from './styles';
+
 export const TasksListScreen: React.FC = () => {
   const { data: tasks, isLoading, error } = useTasksList();
-  const coordinator = useTasksCoordinator();
+  const coordinator = TasksCoordinator;
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage error={error} />;
+  if (error) return <ErrorScreen error={error} />;
 
   return (
-    <View>
-      {tasks.map(task => (
+    <View style={styles.container}>
+      {tasks?.map(task => (
         <TaskCard key={task.id} task={task} />
       ))}
     </View>
   );
 };
+```
+
+```typescript
+// modules/tasks/screens/TasksListScreen/styles.ts
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+});
 ```
 
 ### Hooks
@@ -3375,9 +3450,49 @@ const handleSubmit = (data: FormData) => {
 ### Estilos
 
 - Usar `StyleSheet.create` para estilos
+- **SIEMPRE separar StyleSheets en archivos propios**: Los StyleSheets deben estar en archivos separados dentro de la subcarpeta del componente/screen
 - NO usar estilos inline (excepto para estilos dinámicos)
+- NO definir StyleSheets en el mismo archivo que el componente
 - Estilos compartidos en `shared/styles/`
 - Estilos específicos de módulo en el módulo
+
+**Convención de nombres de archivos de estilos**:
+
+- El archivo de estilos se llama `styles.ts` (sin prefijo del componente/screen)
+- Ubicado dentro de la subcarpeta del componente/screen: `ComponentName/styles.ts`
+- El contexto ya está dado por la carpeta, por lo que no necesita el nombre del componente
+
+**Ejemplo**:
+
+```typescript
+// modules/tasks/components/TaskCard/index.tsx
+import { View, Text } from 'react-native';
+import { styles } from './styles';
+
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onPress }) => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{task.title}</Text>
+    </View>
+  );
+};
+```
+
+```typescript
+// modules/tasks/components/TaskCard/styles.ts
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+```
 
 ## Flujo de Datos
 

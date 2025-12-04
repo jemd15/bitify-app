@@ -32,4 +32,3 @@ export class TasksCoordinator {
     router.back();
   }
 }
-

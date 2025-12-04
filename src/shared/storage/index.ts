@@ -1,21 +1,21 @@
-import {useCallback, useEffect, useState} from 'react'
-import {MMKV} from 'react-native-mmkv'
+import { useCallback, useEffect, useState } from 'react';
+import { MMKV } from 'react-native-mmkv';
 
-import {type Account, type Device} from './schema'
+import { type Account, type Device } from './schema';
 
-export * from './schema'
+export * from './schema';
 
 /**
  * Generic storage class. DO NOT use this directly. Instead, use the exported
  * storage instances below.
  */
 export class Storage<Scopes extends unknown[], Schema> {
-  protected sep = ':'
-  protected store: MMKV
-  private listeners = new Map<string, Set<() => void>>()
+  protected sep = ':';
+  protected store: MMKV;
+  private listeners = new Map<string, Set<() => void>>();
 
-  constructor({id}: {id: string}) {
-    this.store = new MMKV({id})
+  constructor({ id }: { id: string }) {
+    this.store = new MMKV({ id });
   }
 
   /**
@@ -24,13 +24,10 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `set([key], value)`
    *   `set([scope, key], value)`
    */
-  set<Key extends keyof Schema>(
-    scopes: [...Scopes, Key],
-    data: Schema[Key],
-  ): void {
+  set<Key extends keyof Schema>(scopes: [...Scopes, Key], data: Schema[Key]): void {
     // stored as `{ data: <value> }` structure to ease stringification
-    this.store.set(scopes.join(this.sep), JSON.stringify({data}))
-    this.notifyListeners(scopes)
+    this.store.set(scopes.join(this.sep), JSON.stringify({ data }));
+    this.notifyListeners(scopes);
   }
 
   /**
@@ -39,16 +36,15 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `get([key])`
    *   `get([scope, key])`
    */
-  get<Key extends keyof Schema>(
-    scopes: [...Scopes, Key],
-  ): Schema[Key] | undefined {
-    const res = this.store.getString(scopes.join(this.sep))
-    if (!res) return undefined
+  get<Key extends keyof Schema>(scopes: [...Scopes, Key]): Schema[Key] | undefined {
+    const res = this.store.getString(scopes.join(this.sep));
+
+    if (!res) return undefined;
     try {
       // parsed from storage structure `{ data: <value> }`
-      return JSON.parse(res).data
+      return JSON.parse(res).data;
     } catch {
-      return undefined
+      return undefined;
     }
   }
 
@@ -59,8 +55,8 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `remove([scope, key])`
    */
   remove<Key extends keyof Schema>(scopes: [...Scopes, Key]): void {
-    this.store.delete(scopes.join(this.sep))
-    this.notifyListeners(scopes)
+    this.store.delete(scopes.join(this.sep));
+    this.notifyListeners(scopes);
   }
 
   /**
@@ -70,15 +66,15 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `removeMany([scope], [key])`
    */
   removeMany<Key extends keyof Schema>(scopes: [...Scopes], keys: Key[]): void {
-    keys.forEach(key => this.remove([...scopes, key]))
+    keys.forEach(key => this.remove([...scopes, key]));
   }
 
   /**
    * For debugging purposes
    */
   removeAll(): void {
-    this.store.clearAll()
-    this.listeners.clear()
+    this.store.clearAll();
+    this.listeners.clear();
   }
 
   /**
@@ -89,41 +85,44 @@ export class Storage<Scopes extends unknown[], Schema> {
   addOnValueChangedListener<Key extends keyof Schema>(
     scopes: [...Scopes, Key],
     callback: () => void,
-  ): {remove: () => void} {
-    const key = scopes.join(this.sep)
+  ): { remove: () => void } {
+    const key = scopes.join(this.sep);
 
     if (!this.listeners.has(key)) {
-      this.listeners.set(key, new Set())
+      this.listeners.set(key, new Set());
     }
 
-    this.listeners.get(key)!.add(callback)
+    this.listeners.get(key)!.add(callback);
 
     return {
       remove: () => {
-        const callbacks = this.listeners.get(key)
+        const callbacks = this.listeners.get(key);
+
         if (callbacks) {
-          callbacks.delete(callback)
+          callbacks.delete(callback);
           if (callbacks.size === 0) {
-            this.listeners.delete(key)
+            this.listeners.delete(key);
           }
         }
       },
-    }
+    };
   }
 
   private notifyListeners<Key extends keyof Schema>(scopes: [...Scopes, Key]): void {
-    const key = scopes.join(this.sep)
-    const callbacks = this.listeners.get(key)
+    const key = scopes.join(this.sep);
+
+    const callbacks = this.listeners.get(key);
+
     if (callbacks) {
-      callbacks.forEach(callback => callback())
+      callbacks.forEach(callback => callback());
     }
   }
 }
 
 type StorageSchema<T extends Storage<any, any>> =
-  T extends Storage<any, infer U> ? U : never
+  T extends Storage<any, infer U> ? U : never;
 type StorageScopes<T extends Storage<any, any>> =
-  T extends Storage<infer S, any> ? S : never
+  T extends Storage<infer S, any> ? S : never;
 
 /**
  * Hook to use a storage instance. Acts like a useState hook, but persists the
@@ -135,31 +134,27 @@ export function useStorage<
 >(
   storage: Store,
   scopes: [...StorageScopes<Store>, Key],
-): [
-  StorageSchema<Store>[Key] | undefined,
-  (data: StorageSchema<Store>[Key]) => void,
-] {
-  type Schema = StorageSchema<Store>
-  const [value, setValue] = useState<Schema[Key] | undefined>(() =>
-    storage.get(scopes),
-  )
+): [StorageSchema<Store>[Key] | undefined, (data: StorageSchema<Store>[Key]) => void] {
+  type Schema = StorageSchema<Store>;
+  const [value, setValue] = useState<Schema[Key] | undefined>(() => storage.get(scopes));
 
   useEffect(() => {
     const sub = storage.addOnValueChangedListener(scopes, () => {
-      setValue(storage.get(scopes))
-    })
-    return () => sub.remove()
-  }, [storage, scopes])
+      setValue(storage.get(scopes));
+    });
+
+    return () => sub.remove();
+  }, [storage, scopes]);
 
   const setter = useCallback(
     (data: Schema[Key]) => {
-      setValue(data)
-      storage.set(scopes, data)
+      setValue(data);
+      storage.set(scopes, data);
     },
     [storage, scopes],
-  )
+  );
 
-  return [value, setter] as const
+  return [value, setter] as const;
 }
 
 /**
@@ -167,18 +162,17 @@ export function useStorage<
  *
  *   `device.set([key], true)`
  */
-export const device = new Storage<[], Device>({id: 'bitify_device'})
+export const device = new Storage<[], Device>({ id: 'bitify_device' });
 
 /**
  * Account data that's specific to the account on this device
  */
-export const account = new Storage<[string], Account>({id: 'bitify_account'})
+export const account = new Storage<[string], Account>({ id: 'bitify_account' });
 
 if (__DEV__ && typeof window !== 'undefined') {
   // @ts-expect-error - dev global
   window.bitify_storage = {
     device,
     account,
-  }
+  };
 }
-

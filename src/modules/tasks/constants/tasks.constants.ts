@@ -3,4 +3,3 @@ export const TASKS_CONSTANTS = {
   CREATE_TITLE: 'Create Task',
   DETAIL_TITLE: 'Task Detail',
 } as const;
-

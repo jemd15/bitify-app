@@ -24,13 +24,13 @@ export type Transport = (
   message: string | Error,
   metadata: Metadata,
   timestamp: number,
-) => void
+) => void;
 
 export type Metadata = {
   /**
    * Reserved for appending `LogContext` in logging payloads
    */
-  __context__?: undefined
+  __context__?: undefined;
 
   /**
    * Applied as breadcrumb types. Defaults to `default`.
@@ -45,20 +45,20 @@ export type Metadata = {
     | 'query'
     | 'transaction'
     | 'ui'
-    | 'user'
+    | 'user';
 
   /**
    * Tags for categorizing logs
    */
   tags?: {
-    [key: string]: number | string | boolean | null | undefined
-  }
+    [key: string]: number | string | boolean | null | undefined;
+  };
 
   /**
    * Any additional data
    */
-  [key: string]: Serializable | Error | unknown
-}
+  [key: string]: Serializable | Error | unknown;
+};
 
 export type Serializable =
   | string
@@ -68,6 +68,5 @@ export type Serializable =
   | undefined
   | Serializable[]
   | {
-      [key: string]: Serializable
-    }
-
+      [key: string]: Serializable;
+    };

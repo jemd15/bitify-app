@@ -1,14 +1,14 @@
-import {useCallback} from 'react'
-import {msg} from '@lingui/macro'
-import {useLingui} from '@lingui/react'
+import { useCallback } from 'react';
+import { msg } from '@lingui/macro';
+import { useLingui } from '@lingui/react';
 
 type CleanedError = {
-  raw: string | undefined
-  clean: string | undefined
-}
+  raw: string | undefined;
+  clean: string | undefined;
+};
 
 export function useCleanError() {
-  const {_} = useLingui()
+  const { _ } = useLingui();
 
   return useCallback<(error?: any) => CleanedError>(
     error => {
@@ -16,9 +16,9 @@ export function useCleanError() {
         return {
           raw: undefined,
           clean: undefined,
-        }
+        };
 
-      let raw = error.toString()
+      let raw = error.toString();
 
       if (isNetworkError(raw)) {
         return {
@@ -26,7 +26,7 @@ export function useCleanError() {
           clean: _(
             msg`Unable to connect. Please check your internet connection and try again.`,
           ),
-        }
+        };
       }
 
       if (
@@ -39,7 +39,7 @@ export function useCleanError() {
           clean: _(
             msg`The server appears to be experiencing issues. Please try again in a few moments.`,
           ),
-        }
+        };
       }
 
       if (raw.includes('Bad token scope') || raw.includes('Bad token method')) {
@@ -48,7 +48,7 @@ export function useCleanError() {
           clean: _(
             msg`This feature is not available while using an app password. Please sign in with your main password.`,
           ),
-        }
+        };
       }
 
       if (raw.includes('Rate Limit Exceeded')) {
@@ -57,20 +57,20 @@ export function useCleanError() {
           clean: _(
             msg`You've reached the maximum number of requests allowed. Please try again later.`,
           ),
-        }
+        };
       }
 
       if (raw.startsWith('Error: ')) {
-        raw = raw.slice('Error: '.length)
+        raw = raw.slice('Error: '.length);
       }
 
       return {
         raw,
         clean: undefined,
-      }
+      };
     },
     [_],
-  )
+  );
 }
 
 const NETWORK_ERRORS = [
@@ -79,15 +79,16 @@ const NETWORK_ERRORS = [
   'Failed to fetch',
   'Load failed',
   'Upstream service unreachable',
-]
+];
 
 export function isNetworkError(e: unknown): boolean {
-  const str = String(e)
+  const str = String(e);
+
   for (const err of NETWORK_ERRORS) {
     if (str.includes(err)) {
-      return true
+      return true;
     }
   }
-  return false
-}
 
+  return false;
+}

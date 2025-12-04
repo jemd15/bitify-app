@@ -7,6 +7,7 @@ import typescript from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import unusedImports from 'eslint-plugin-unused-imports';
 import prettier from 'eslint-plugin-prettier';
+import globals from 'globals';
 
 export default [
   {
@@ -24,6 +25,11 @@ export default [
       parser: tsParser,
       ecmaVersion: 2021,
       sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+        ...globals.es2021,
+      },
     },
     settings: {
       react: { version: 'detect' },
@@ -49,6 +55,15 @@ export default [
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'react-native/no-inline-styles': 'error',
       'unused-imports/no-unused-imports': 'error',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       'import/order': [
         'error',
         {
@@ -63,12 +78,6 @@ export default [
       ],
       'eol-last': ['error', 'always'],
       'prettier/prettier': 'error',
-    },
-    env: {
-      node: true,
-      browser: true,
-      es2021: true,
-      'react-native/react-native': true,
     },
   },
 ];

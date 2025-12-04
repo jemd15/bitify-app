@@ -1,17 +1,19 @@
-import {View, StyleSheet, type ViewStyle} from 'react-native'
-import type {ReactNode} from 'react'
+import { View, type ViewStyle } from 'react-native';
+import type { ReactNode } from 'react';
+
+import { styles } from './styles';
 
 interface SkeletonProps {
-  blend?: boolean
+  blend?: boolean;
 }
 
 export function SkeletonText({
   blend,
   style,
   width,
-}: ViewStyle & SkeletonProps & {width?: number}) {
+}: ViewStyle & SkeletonProps & { width?: number }) {
   return (
-    <View style={[styles.textContainer, {maxWidth: width}, style]}>
+    <View style={[styles.textContainer, { maxWidth: width }, style]}>
       <View
         style={[
           styles.textSkeleton,
@@ -21,7 +23,7 @@ export function SkeletonText({
         ]}
       />
     </View>
-  )
+  );
 }
 
 export function SkeletonCircle({
@@ -31,8 +33,8 @@ export function SkeletonCircle({
   style,
 }: ViewStyle &
   SkeletonProps & {
-    children?: ReactNode
-    size: number
+    children?: ReactNode;
+    size: number;
   }) {
   return (
     <View
@@ -45,10 +47,11 @@ export function SkeletonCircle({
           opacity: blend ? 0.6 : 1,
         },
         style,
-      ]}>
+      ]}
+    >
       {children}
     </View>
-  )
+  );
 }
 
 export function SkeletonPill({
@@ -57,7 +60,7 @@ export function SkeletonPill({
   style,
 }: ViewStyle &
   SkeletonProps & {
-    size: number
+    size: number;
   }) {
   return (
     <View
@@ -72,26 +75,5 @@ export function SkeletonPill({
         style,
       ]}
     />
-  )
+  );
 }
-
-const styles = StyleSheet.create({
-  textContainer: {
-    flex: 1,
-    paddingVertical: 2,
-  },
-  textSkeleton: {
-    borderRadius: 4,
-    backgroundColor: '#E2E2E4',
-    height: 14,
-  },
-  circleContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#E2E2E4',
-  },
-  pillContainer: {
-    backgroundColor: '#E2E2E4',
-  },
-})
-
