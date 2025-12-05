@@ -1,0 +1,47 @@
+# Spanish translations
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+
+msgid "Try again"
+msgstr "Intentar de nuevo"
+
+msgid "Oh no!"
+msgstr "¡Oh no!"
+
+msgid "There was an unexpected issue in the application. Please let us know if this happened to you!"
+msgstr "Hubo un problema inesperado en la aplicación. ¡Por favor avísanos si esto te pasó!"
+
+msgid "now"
+msgstr "ahora"
+
+msgid "# second"
+msgstr "# segundo"
+
+msgid "# seconds"
+msgstr "# segundos"
+
+msgid "# minute"
+msgstr "# minuto"
+
+msgid "# minutes"
+msgstr "# minutos"
+
+msgid "# hour"
+msgstr "# hora"
+
+msgid "# hours"
+msgstr "# horas"
+
+msgid "# day"
+msgstr "# día"
+
+msgid "# days"
+msgstr "# días"
+
+msgid "# month"
+msgstr "# mes"
+
+msgid "# months"
+msgstr "# meses"
+

@@ -4868,17 +4868,18 @@ Bitify utiliza **Lingui** para la internacionalización. El idioma principal es 
 
 ```
 locale/
-├── i18n.ts              # Configuración principal de i18n (native)
-├── i18n.web.ts          # Configuración para web
-├── i18nProvider.tsx     # Provider de i18n
-├── helpers.ts           # Helpers de localización
-├── deviceLocales.ts      # Detección de idioma del dispositivo
+├── i18n.ts              # Configuración principal de i18n
+├── i18nProvider.tsx     # Provider de React para i18n
 ├── languages.ts         # Definición de idiomas soportados
+├── deviceLocales.ts     # Detección de idioma del dispositivo
+├── helpers.ts           # Helpers de formateo (fechas, números, etc.)
 └── locales/             # Archivos de traducción
     ├── es/
-    │   └── messages.po  # Mensajes en español
+    │   ├── messages.po  # Mensajes en español (fuente)
+    │   └── messages.js  # Mensajes compilados (generado)
     └── en/
-        └── messages.po  # Mensajes en inglés
+        ├── messages.po  # Mensajes en inglés (fuente)
+        └── messages.js  # Mensajes compilados (generado)
 ```
 
 ### Idiomas Soportados
@@ -4958,6 +4959,21 @@ export function useLocaleLanguage(): void {
 ### Uso en Componentes
 
 **Con macros de Lingui**:
+
+```typescript
+import { msg } from '@lingui/macro';
+import { useLingui } from '@lingui/react';
+
+export const MyComponent: React.FC = () => {
+  const { _ } = useLingui();
+
+  return (
+    <Text>{_(msg`Hello world`)}</Text>
+  );
+}
+```
+
+**Ejemplo más completo**:
 
 ```typescript
 // modules/tasks/components/TaskCard.tsx
@@ -5040,7 +5056,27 @@ export function getDeviceLanguage(): AppLanguage {
 
 ### Cambio de Idioma
 
-El idioma se almacena en el storage persistente y se puede cambiar desde la configuración:
+El idioma se gestiona a través del hook `useLanguagePrefs`:
+
+```typescript
+import { useLanguagePrefs } from '@shared/hooks/useLanguagePrefs';
+import { AppLanguage } from '@locale/languages';
+
+export const MyComponent: React.FC = () => {
+  const { appLanguage, changeLanguage } = useLanguagePrefs();
+
+  return (
+    <Button
+      title="Cambiar a inglés"
+      onPress={() => changeLanguage(AppLanguage.EN)}
+    />
+  );
+}
+```
+
+**Implementación del hook**:
+
+El idioma se almacena en el storage persistente (`device.appLanguage`) y se puede cambiar desde cualquier componente:
 
 ```typescript
 // shared/hooks/useLanguagePrefs.ts
@@ -5071,22 +5107,61 @@ export const useLanguagePrefs = () => {
 };
 ```
 
-### Extracción de Mensajes
+### Integración con Módulo Preferences
 
-Lingui extrae automáticamente los mensajes usando macros:
+El sistema está preparado para integrarse con el módulo `@modules/preferences`. El hook `useLanguagePrefs` ya utiliza el storage persistente (`device.appLanguage`), por lo que cuando se implemente la UI de preferences, solo será necesario:
+
+1. Importar `useLanguagePrefs` en el componente de preferences
+2. Usar `changeLanguage` para cambiar el idioma
+3. El cambio se persistirá automáticamente y se aplicará en toda la app
+
+**Ejemplo en `PreferencesScreen`**:
+
+```typescript
+import { useLanguagePrefs } from '@shared/hooks/useLanguagePrefs';
+import { AppLanguage, SUPPORTED_LANGUAGES } from '@locale/languages';
+
+export const PreferencesScreen: React.FC = () => {
+  const { appLanguage, changeLanguage } = useLanguagePrefs();
+
+  return (
+    <View>
+      {SUPPORTED_LANGUAGES.map(lang => (
+        <Button
+          key={lang.code}
+          title={lang.nativeLabel}
+          selected={appLanguage === lang.code}
+          onPress={() => changeLanguage(lang.code)}
+        />
+      ))}
+    </View>
+  );
+}
+```
+
+### Extracción y Compilación de Mensajes
+
+**Extraer mensajes del código**:
 
 ```bash
-# Extraer mensajes a archivos .po
-npx lingui extract
-
-# Compilar mensajes a JavaScript
-npx lingui compile
+npm run i18n:extract
 ```
+
+Este comando busca todos los mensajes marcados con `msg` en el código y los agrega a los archivos `.po`.
+
+**Compilar mensajes**:
+
+```bash
+npm run i18n:compile
+```
+
+Este comando compila los archivos `.po` a `.js` para que puedan ser importados en la aplicación.
+
+**Nota**: Los comandos npm están configurados para usar `npx lingui extract` y `npx lingui compile` internamente.
 
 ### Convenciones
 
 - **NO hardcodear strings**: Todos los textos visibles al usuario deben usar i18n
 - **Usar macros**: Usar `msg`, `t`, `Trans` de `@lingui/macro`
-- **IDs descriptivos**: Los mensajes se identifican por su contenido, no por IDs
 - **Pluralización**: Usar pluralización de Lingui cuando sea necesario
-- **Formateo de fechas/números**: Usar `Intl` APIs con el locale actual
+- **Formateo de fechas/números**: Usar helpers de `@locale/helpers` o `Intl` APIs

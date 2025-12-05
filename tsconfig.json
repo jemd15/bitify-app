@@ -8,7 +8,8 @@
       "@lib/*": ["src/lib/*"],
       "@store/*": ["src/store/*"],
       "@shared/*": ["src/shared/*"],
-      "@app/*": ["src/app/*"]
+      "@app/*": ["src/app/*"],
+      "@locale/*": ["src/locale/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "src/shared/types/env.d.ts"]
