@@ -1,0 +1,47 @@
+# English translations
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+
+msgid "Try again"
+msgstr "Try again"
+
+msgid "Oh no!"
+msgstr "Oh no!"
+
+msgid "There was an unexpected issue in the application. Please let us know if this happened to you!"
+msgstr "There was an unexpected issue in the application. Please let us know if this happened to you!"
+
+msgid "now"
+msgstr "now"
+
+msgid "# second"
+msgstr "# second"
+
+msgid "# seconds"
+msgstr "# seconds"
+
+msgid "# minute"
+msgstr "# minute"
+
+msgid "# minutes"
+msgstr "# minutes"
+
+msgid "# hour"
+msgstr "# hour"
+
+msgid "# hours"
+msgstr "# hours"
+
+msgid "# day"
+msgstr "# day"
+
+msgid "# days"
+msgstr "# days"
+
+msgid "# month"
+msgstr "# month"
+
+msgid "# months"
+msgstr "# months"
+
