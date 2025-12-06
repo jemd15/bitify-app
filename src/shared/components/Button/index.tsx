@@ -39,7 +39,6 @@ export function Button({
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-
   const buttonStyle = [
     styles.button,
     styles[`button_${size}`],
@@ -47,7 +46,6 @@ export function Button({
     isDisabled && styles.buttonDisabled,
     style,
   ];
-
   const textStyles = [
     styles.text,
     styles[`text_${size}`],
