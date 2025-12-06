@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 import { LogLevel, type Transport } from '../types';
 import { prepareMetadata } from '../util';
 
-
 export const consoleTransport: Transport = (
   level,
   context,
