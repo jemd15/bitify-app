@@ -13,11 +13,8 @@ interface Toast {
 }
 
 const DURATION = 3000;
-
 let toastId = 0;
-
 const toasts: Toast[] = [];
-
 const listeners = new Set<() => void>();
 
 function notify() {
@@ -26,7 +23,6 @@ function notify() {
 
 export function show(message: string, type: ToastType = 'default', duration = DURATION) {
   const id = `toast-${toastId++}`;
-
   const toast: Toast = { id, message, type, duration };
 
   toasts.push(toast);
@@ -81,7 +77,6 @@ export function ToastContainer() {
 
 function ToastItem({ toast }: { toast: Toast }) {
   const opacity = new Animated.Value(0);
-
   const translateY = new Animated.Value(-20);
 
   useEffect(() => {

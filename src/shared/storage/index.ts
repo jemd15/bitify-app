@@ -58,7 +58,6 @@ export class Storage<Scopes extends unknown[], Schema> {
 
   async removeAll(): Promise<void> {
     const allKeys = await AsyncStorage.getAllKeys();
-
     const keysToRemove = allKeys.filter(key => key.startsWith(`${this.storeId}:`));
 
     await AsyncStorage.multiRemove(keysToRemove);
@@ -92,7 +91,6 @@ export class Storage<Scopes extends unknown[], Schema> {
 
   private notifyListeners<Key extends keyof Schema>(scopes: [...Scopes, Key]): void {
     const key = scopes.join(this.sep);
-
     const callbacks = this.listeners.get(key);
 
     if (callbacks) {

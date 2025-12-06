@@ -4,9 +4,7 @@ import { Platform } from 'react-native';
 import { LogLevel, type Transport } from '../types';
 import { prepareMetadata } from '../util';
 
-/**
- * Used in dev mode to nicely log to the console
- */
+
 export const consoleTransport: Transport = (
   level,
   context,
@@ -15,7 +13,6 @@ export const consoleTransport: Transport = (
   timestamp,
 ) => {
   const hasMetadata = Object.keys(metadata).length;
-
   const colorize = withColor(
     {
       [LogLevel.Debug]: colors.magenta,
@@ -25,9 +22,7 @@ export const consoleTransport: Transport = (
       [LogLevel.Error]: colors.red,
     }[level],
   );
-
   const isWeb = Platform.OS === 'web';
-
   let msg = `${colorize(format(new Date(timestamp), 'HH:mm:ss'))}`;
 
   if (context) {
@@ -79,7 +74,6 @@ const colors: {
 
 function withColor([x, y]: [number, number]) {
   const rgx = new RegExp(`\\x1b\\[${y}m`, 'g');
-
   const open = `\x1b[${x}m`,
     close = `\x1b[${y}m`;
 

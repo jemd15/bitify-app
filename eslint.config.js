@@ -74,7 +74,27 @@ export default [
       'padding-line-between-statements': [
         'error',
         { blankLine: 'always', prev: '*', next: 'return' },
-        { blankLine: 'always', prev: ['const', 'let'], next: '*' },
+        {
+          blankLine: 'always',
+          prev: ['const', 'let'],
+          next: ['if', 'for', 'while', 'switch', 'function', 'class', 'export'],
+        },
+        {
+          blankLine: 'always',
+          prev: ['import'],
+          next: ['const', 'let', 'function', 'class', 'export'],
+        },
+        {
+          blankLine: 'always',
+          prev: ['const', 'let', 'function', 'class'],
+          next: ['export'],
+        },
+        {
+          blankLine: 'always',
+          prev: ['function', 'class', 'if', 'for', 'while', 'switch', 'try'],
+          next: ['const', 'let'],
+        },
+        { blankLine: 'never', prev: ['const', 'let'], next: ['const', 'let'] },
       ],
       'eol-last': ['error', 'always'],
       'prettier/prettier': 'error',

@@ -8,7 +8,6 @@ export function getDeviceLocales(): string[] {
 
 export function getDeviceLanguage(): AppLanguage {
   const locales = getDeviceLocales();
-
   const firstLocale = locales[0] || 'es';
 
   if (firstLocale.startsWith('es')) {

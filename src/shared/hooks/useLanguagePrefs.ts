@@ -7,7 +7,6 @@ import { dynamicActivate } from '@locale/i18n';
 
 export const useLanguagePrefs = () => {
   const [appLanguage, setAppLanguage] = useStorage(device, ['appLanguage']);
-
   const currentLanguage = appLanguage || getDeviceLanguage();
 
   useEffect(() => {
