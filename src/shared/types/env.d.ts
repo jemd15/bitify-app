@@ -10,3 +10,5 @@ declare namespace NodeJS {
     EXPO_PUBLIC_SUPABASE_PASS: string;
   }
 }
+
+declare const __DEV__: boolean;

@@ -29,6 +29,7 @@ export default [
         ...globals.node,
         ...globals.browser,
         ...globals.es2021,
+        __DEV__: 'readonly',
       },
     },
     settings: {
