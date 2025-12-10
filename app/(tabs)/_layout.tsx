@@ -1,18 +1,16 @@
-import { Redirect, Tabs } from 'expo-router';
+import { useEffect } from 'react';
+import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LoadingSpinner } from '@shared/components';
 import { useAuthSession } from '@modules/auth/hooks/useAuthSession';
 
 export default function TabsLayout() {
   const { data: session, isLoading } = useAuthSession();
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!session) {
-    return <Redirect href="/account/auth" />;
-  }
+  useEffect(() => {
+    if (!isLoading && !session) {
+      router.replace('/account/auth');
+    }
+  }, [isLoading, session]);
 
   return (
     <Tabs
