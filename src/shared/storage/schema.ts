@@ -5,6 +5,7 @@ export type Device = {
   appLanguage: 'es' | 'en';
   hasSeenOnboarding: boolean;
   lastSyncTimestamp: number | undefined;
+  rememberSession: boolean;
   preferences: {
     theme: 'light' | 'dark' | 'auto';
     notificationsEnabled: boolean;
