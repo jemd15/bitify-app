@@ -1,18 +1,5 @@
-/*eslint-disable*/
-export const messages = {
-  'Try again': 'Intentar de nuevo',
-  'Oh no!': '¡Oh no!',
-  'There was an unexpected issue in the application. Please let us know if this happened to you!':
-    'Hubo un problema inesperado en la aplicación. ¡Por favor avísanos si esto te pasó!',
-  now: 'ahora',
-  '# second': '# segundo',
-  '# seconds': '# segundos',
-  '# minute': '# minuto',
-  '# minutes': '# minutos',
-  '# hour': '# hora',
-  '# hours': '# horas',
-  '# day': '# día',
-  '# days': '# días',
-  '# month': '# mes',
-  '# months': '# meses',
+module.exports = {
+  messages: JSON.parse(
+    '{"/xe4EP":["Welcome to Bitify"],"0Y8COo":["# hora"],"12WvI9":[["0"],"d"],"1QfxQT":["Descartar"],"5GGAqz":["¡Oh no!"],"5tT0+u":["Formato de email inválido"],"77VGfA":["Esta función no está disponible mientras usas una contraseña de aplicación. Por favor, inicia sesión con tu contraseña principal."],"8ZsakT":["Contraseña"],"8wYDMp":["Already have an account?"],"AqcrQK":[["0","plural",{"one":["#"," día"],"other":["#"," días"]}]],"BzEFor":["o"],"CBuDZ1":["# días"],"CWsYB3":["Hola de nuevo"],"FdKs1q":["Manage your household tasks easily"],"FtJj/x":["# minutos"],"G4UqCP":["# segundo"],"H07p0L":["Sign up to get started"],"IS0nrP":["Create Account"],"ItUNqU":["No se puede conectar. Por favor, revisa tu conexión a internet e inténtalo de nuevo."],"J/hVSQ":[["0"]],"KDw4GX":["Intentar de nuevo"],"M4fjIB":[["0","plural",{"one":["#"," hora"],"other":["#"," horas"]}]],"NSSJsj":[["0"],"h"],"NnRCUm":[["0"],"s"],"O3oNi5":["Email"],"PlVus2":[["0","plural",{"one":["#"," minuto"],"other":["#"," minutos"]}]],"Pvupk0":[["0","plural",{"one":["#"," mes"],"other":["#"," meses"]}]],"RRgNMe":[["0","plural",{"one":["#"," segundo"],"other":["#"," segundos"]}]],"Rx6Z3l":["# segundos"],"TpSg+y":["# día"],"VE2Rfw":["Login to your account to continue"],"W3Yh+b":["Login with Google"],"YwzE9K":["ahora"],"ZSWUwq":[["0"],"m"],"ZdWWqK":["El servidor parece estar experimentando problemas. Por favor, inténtalo de nuevo en unos momentos."],"ZsZeV2":["Email es requerido"],"c79FCY":["Please confirm your password"],"chRwq/":["Contraseña es requerida"],"gQ3I5h":[["0","plural",{"one":["#","mo"],"other":["#","mo"]}]],"hlHIV4":["# mes"],"hsiT9p":["Has alcanzado el número máximo de solicitudes permitidas. Por favor, inténtalo de nuevo más tarde."],"jDFIo5":["Forgot Password?"],"ln9/n9":["Don\'t have an account?"],"lpIMne":["Passwords do not match"],"m1yV8g":["# meses"],"n1ekoW":["Crear cuenta"],"nOlSOA":["# horas"],"oZyG4C":["Continuar con Google"],"p2/GCq":["Confirm Password"],"vwGkYB":["La contraseña debe ser de al menos 8 caracteres"],"wapGcj":[["message"]],"xg3+pu":["# minuto"],"yUqcy2":["Hubo un problema inesperado en la aplicación. ¡Por favor avísanos si esto te pasó!"],"z0t9bb":["Login"],"zAvS8w":["Crear cuenta para continuar"]}',
+  ),
 };

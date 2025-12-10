@@ -4958,74 +4958,110 @@ export function useLocaleLanguage(): void {
 
 ### Uso en Componentes
 
-**Con macros de Lingui**:
+**1. `t` para strings simples (más común y recomendado)**:
+
+Usa `t` directamente para strings simples que se pasan como props o valores. No requiere `useLingui`:
 
 ```typescript
-import { msg } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
+import { t } from '@lingui/macro';
 
-export const MyComponent: React.FC = () => {
-  const { _ } = useLingui();
-
-  return (
-    <Text>{_(msg`Hello world`)}</Text>
-  );
-}
-```
-
-**Ejemplo más completo**:
-
-```typescript
-// modules/tasks/components/TaskCard.tsx
-import { Trans, t, msg } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
-
-export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
-  const { _ } = useLingui();
-
+export const LoginForm: React.FC = () => {
   return (
     <View>
-      <Text>{task.title}</Text>
-      <Text>{_(msg`Completada el ${task.completedAt}`)}</Text>
-      <Button title={_(msg`Completar`)} />
+      <Input label={t`Email`} />
+      <Input label={t`Password`} />
+      <Button title={t`Sign In`} />
     </View>
   );
 };
 ```
 
-**Con Trans para textos complejos**:
+**2. `<Trans>` para contenido JSX**:
+
+Usa `<Trans>` cuando el texto contiene elementos JSX anidados o cuando quieres mantener el formato:
 
 ```typescript
-import { Trans } from '@lingui/react';
+import { Trans } from '@lingui/macro';
 
-<Trans>
-  Tarea <Text style={styles.bold}>{task.title}</Text> completada
-</Trans>
+export const LoginScreen: React.FC = () => {
+  return (
+    <View>
+      <Text>
+        <Trans>Welcome Back</Trans>
+      </Text>
+      <Text>
+        <Trans>Sign in to continue</Trans>
+      </Text>
+      <Text>
+        <Trans>
+          Tarea <Text style={styles.bold}>{task.title}</Text> completada
+        </Trans>
+      </Text>
+    </View>
+  );
+};
 ```
 
-**Con variables**:
+**3. `msg` con `useLingui` solo cuando necesitas pasar como variable**:
+
+Usa `msg` con `useLingui` cuando necesitas obtener el mensaje traducido como string para pasarlo como prop o variable:
+
+```typescript
+import { msg } from '@lingui/macro';
+import { useLingui } from '@lingui/react';
+
+export const ErrorBoundary: React.FC = () => {
+  const { _ } = useLingui();
+
+  return (
+    <ErrorScreen
+      title={_(msg`Oh no!`)}
+      message={_(msg`There was an unexpected issue in the application.`)}
+    />
+  );
+};
+```
+
+**Con variables en `t`**:
 
 ```typescript
 import { t } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
 
-const { _ } = useLingui();
-const message = _(msg`Tienes ${count} tareas pendientes`, { count });
+// t puede incluir variables directamente
+const message = t`You have ${count} pending tasks`;
 ```
 
 ### Uso en Hooks y Utilidades
 
+**En hooks, usa `t` directamente cuando sea posible**:
+
 ```typescript
 // modules/tasks/hooks/useTasksList.ts
 import { t } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
 
 export const useTasksList = () => {
-  const { _ } = useLingui();
-
-  const errorMessage = _(msg`No se pudieron cargar las tareas`);
+  const errorMessage = t`No se pudieron cargar las tareas`;
 
   // ...
+};
+```
+
+**Solo usa `msg` con `useLingui` cuando necesites el string traducido explícitamente**:
+
+```typescript
+// shared/hooks/useTimeAgo.ts
+import { msg } from '@lingui/macro';
+import { useLingui } from '@lingui/react';
+
+export const useGetTimeAgo = () => {
+  const { i18n } = useLingui();
+
+  return useCallback(
+    (date: Date) => {
+      return i18n._(msg`now`);
+    },
+    [i18n],
+  );
 };
 ```
 
@@ -5147,7 +5183,7 @@ export const PreferencesScreen: React.FC = () => {
 npm run i18n:extract
 ```
 
-Este comando busca todos los mensajes marcados con `msg` en el código y los agrega a los archivos `.po`.
+Este comando busca todos los mensajes marcados con `t`, `<Trans>`, y `msg` en el código y los agrega a los archivos `.po`.
 
 **Compilar mensajes**:
 
@@ -5162,6 +5198,17 @@ Este comando compila los archivos `.po` a `.js` para que puedan ser importados e
 ### Convenciones
 
 - **NO hardcodear strings**: Todos los textos visibles al usuario deben usar i18n
-- **Usar macros**: Usar `msg`, `t`, `Trans` de `@lingui/macro`
+- **Preferir `t` para strings simples**: Usa `t\`Texto\``directamente, es más simple y no requiere`useLingui`
+- **Usar `<Trans>` para JSX**: Cuando el texto contiene elementos JSX anidados o necesita mantener formato
+- **Usar `msg` solo cuando sea necesario**: Solo cuando necesites obtener el string traducido explícitamente como variable
+- **Macros disponibles**: `t`, `<Trans>`, `msg` de `@lingui/macro`
 - **Pluralización**: Usar pluralización de Lingui cuando sea necesario
 - **Formateo de fechas/números**: Usar helpers de `@locale/helpers` o `Intl` APIs
+
+**Resumen de cuándo usar cada macro**:
+
+| Macro     | Cuándo usar                                        | Ejemplo                                    |
+| --------- | -------------------------------------------------- | ------------------------------------------ |
+| `t`       | Strings simples como props o valores               | `label={t\`Email\``}                       |
+| `<Trans>` | Contenido JSX con elementos anidados               | `<Trans>Welcome <Text>Back</Text></Trans>` |
+| `msg`     | Cuando necesitas el string traducido como variable | `const title = _(msg\`Title\`)`            |
