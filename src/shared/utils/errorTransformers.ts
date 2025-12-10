@@ -1,6 +1,7 @@
 import { AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 import { ERROR_CODES } from '@shared/constants/errors.constants';
 import { DomainError } from '@shared/errors/DomainError';
+import { logger } from '@shared/logger';
 
 export const transformSupabaseAuthError = (
   error: SupabaseAuthError | Error,
@@ -41,6 +42,8 @@ export const transformSupabaseAuthError = (
   if (errorCode && errorCode >= 500) {
     return new DomainError(ERROR_CODES.NETWORK.SERVER_ERROR, undefined, error);
   }
+
+  logger.warn('Supabase auth error', { error });
 
   return new DomainError(ERROR_CODES.AUTH.LOGIN_FAILED, undefined, error);
 };
