@@ -222,8 +222,8 @@ msgstr "Contraseña es requerida"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:7
 #: src/modules/auth/components/LoginForm/constants.ts:7
-msgid "Password must be at least 8 characters"
-msgstr "La contraseña debe ser de al menos 8 caracteres"
+msgid "Password must be at least 6 characters"
+msgstr "La contraseña debe ser de al menos 6 caracteres"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:9
 msgid "Passwords do not match"
