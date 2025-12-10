@@ -2,11 +2,11 @@ import { router } from 'expo-router';
 
 export class AuthCoordinator {
   static navigateToLogin() {
-    router.push('/account/login');
+    router.replace('/account/login');
   }
 
   static navigateToCreateAccount() {
-    router.push('/account/create-account');
+    router.replace('/account/create-account');
   }
 
   static navigateToHome() {
@@ -14,7 +14,7 @@ export class AuthCoordinator {
   }
 
   static navigateToSignup() {
-    router.push('/account/signup');
+    router.replace('/account/signup');
   }
 
   static navigateToForgotPassword() {
