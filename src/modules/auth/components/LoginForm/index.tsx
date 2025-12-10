@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Button,
   ButtonText,
@@ -11,6 +12,7 @@ import {
   FormControlErrorText,
   Input,
   InputField,
+  InputSlot,
 } from '@gluestack-ui/themed';
 import { useLogin } from '@modules/auth/hooks/useLogin';
 import { loginSchema } from '@modules/auth/domain/validators/login.validator';
@@ -24,6 +26,7 @@ import { styles } from './styles';
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({});
   const { mutate: login, isPending } = useLogin();
   const handleSubmit = () => {
@@ -53,6 +56,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   };
   const handleForgotPassword = () => {
     AuthCoordinator.navigateToForgotPassword();
+  };
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
   };
 
   return (
@@ -86,11 +92,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           <InputField
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={!showPassword}
             editable={!isPending}
             accessibilityLabel={LOGIN_FORM_LABELS.PASSWORD}
             accessibilityState={{ disabled: isPending }}
           />
+          <InputSlot onPress={togglePasswordVisibility} pr="$3">
+            <Ionicons
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={20}
+              color="#666"
+            />
+          </InputSlot>
         </Input>
         {errors.password && (
           <FormControlError>

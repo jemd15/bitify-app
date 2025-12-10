@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Button,
   ButtonText,
@@ -11,6 +12,7 @@ import {
   FormControlErrorText,
   Input,
   InputField,
+  InputSlot,
 } from '@gluestack-ui/themed';
 import { useSignUp } from '@modules/auth/hooks/useSignUp';
 import { signupSchema } from '@modules/auth/domain/validators/signup.validator';
@@ -23,6 +25,8 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<
     Partial<Record<keyof SignUpInput | 'confirmPassword', string>>
   >({});
@@ -54,6 +58,12 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
         setErrors({ email: error.message });
       },
     });
+  };
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(prev => !prev);
   };
 
   return (
@@ -89,11 +99,18 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
           <InputField
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={!showPassword}
             editable={!isPending}
             accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.PASSWORD}
             accessibilityState={{ disabled: !!errors.password }}
           />
+          <InputSlot onPress={togglePasswordVisibility} pr="$3">
+            <Ionicons
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={20}
+              color="#666"
+            />
+          </InputSlot>
         </Input>
         {errors.password && (
           <FormControlError>
@@ -111,11 +128,18 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
           <InputField
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            secureTextEntry
+            secureTextEntry={!showConfirmPassword}
             editable={!isPending}
             accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.CONFIRM_PASSWORD}
             accessibilityState={{ disabled: !!errors.confirmPassword }}
           />
+          <InputSlot onPress={toggleConfirmPasswordVisibility} pr="$3">
+            <Ionicons
+              name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={20}
+              color="#666"
+            />
+          </InputSlot>
         </Input>
         {errors.confirmPassword && (
           <FormControlError>
