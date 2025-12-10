@@ -110,11 +110,15 @@ msgstr "{message}"
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:7
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:7
 msgid "Already have an account?"
-msgstr "Already have an account?"
+msgstr "¿Ya tienes una cuenta?"
+
+#: src/modules/account/constants/account.constants.ts:14
+msgid "Authentication"
+msgstr "Autenticación"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:14
 msgid "Confirm Password"
-msgstr "Confirm Password"
+msgstr "Confirmar contraseña"
 
 #: src/modules/auth/components/GoogleLoginButton/index.tsx:20
 #~ msgid "Continue with Google"
@@ -125,20 +129,29 @@ msgstr "Confirm Password"
 #: src/modules/auth/screens/LoginScreen/constants.ts:8
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:6
 msgid "Create Account"
-msgstr "Create Account"
+msgstr "Crear cuenta"
 
-#: src/modules/auth/components/AuthError/index.tsx:18
+#: src/modules/account/constants/account.constants.ts:11
+msgid "Dark mode, Face ID and keep session"
+msgstr "Modo oscuro, Face ID y mantener sesión"
+
+#: src/modules/account/constants/account.constants.ts:9
+msgid "Deposits, features and documents"
+msgstr "Depósitos, características y documentos"
+
+#: src/modules/auth/components/AuthError/index.tsx:25
+#: src/modules/auth/components/AuthError/index.tsx:27
 msgid "Dismiss"
 msgstr "Descartar"
 
 #: src/modules/auth/screens/LoginScreen/constants.ts:7
 msgid "Don't have an account?"
-msgstr "Don't have an account?"
+msgstr "¿No tienes una cuenta?"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:12
 #: src/modules/auth/components/LoginForm/constants.ts:10
 msgid "Email"
-msgstr "Email"
+msgstr "Correo electrónico"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:4
 #: src/modules/auth/components/LoginForm/constants.ts:4
@@ -147,30 +160,42 @@ msgstr "Email es requerido"
 
 #: src/modules/auth/components/LoginForm/constants.ts:13
 msgid "Forgot Password?"
-msgstr "Forgot Password?"
+msgstr "¿Olvidaste tu contraseña?"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:5
 #: src/modules/auth/components/LoginForm/constants.ts:5
 msgid "Invalid email format"
 msgstr "Formato de email inválido"
 
+#: src/modules/account/constants/account.constants.ts:8
+msgid "Investments"
+msgstr "Inversiones"
+
 #: src/modules/auth/components/LoginForm/constants.ts:12
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:8
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:8
 msgid "Login"
-msgstr "Login"
+msgstr "Iniciar sesión"
 
 #: src/modules/auth/screens/LoginScreen/constants.ts:5
 msgid "Login to your account to continue"
-msgstr "Login to your account to continue"
+msgstr "Inicia sesión en tu cuenta para continuar"
 
 #: src/modules/auth/components/GoogleLoginButton/constants.ts:4
 msgid "Login with Google"
-msgstr "Login with Google"
+msgstr "Iniciar sesión con Google"
+
+#: src/modules/account/constants/account.constants.ts:12
+msgid "Logout"
+msgstr "Cerrar sesión"
 
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:5
 msgid "Manage your household tasks easily"
-msgstr "Manage your household tasks easily"
+msgstr "Administra tus tareas del hogar fácilmente"
+
+#: src/modules/account/constants/account.constants.ts:4
+msgid "My Account"
+msgstr "Mi cuenta"
 
 #: src/shared/hooks/useTimeAgo.ts:129
 msgid "now"
@@ -202,11 +227,23 @@ msgstr "La contraseña debe ser de al menos 8 caracteres"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:9
 msgid "Passwords do not match"
-msgstr "Passwords do not match"
+msgstr "Las contraseñas no coinciden"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:8
 msgid "Please confirm your password"
-msgstr "Please confirm your password"
+msgstr "Por favor confirma tu contraseña"
+
+#: src/modules/account/constants/account.constants.ts:10
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: src/modules/account/constants/account.constants.ts:6
+msgid "Pro Plan"
+msgstr "Plan Pro"
+
+#: src/modules/account/constants/account.constants.ts:13
+msgid "Settings"
+msgstr "Configuración"
 
 #: src/modules/auth/components/LoginForm/index.tsx:64
 #~ msgid "Sign In"
@@ -218,7 +255,7 @@ msgstr "Please confirm your password"
 
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:5
 msgid "Sign up to get started"
-msgstr "Sign up to get started"
+msgstr "Regístrate para comenzar"
 
 #: src/shared/hooks/useCleanError.ts:40
 msgid "The server appears to be experiencing issues. Please try again in a few moments."
@@ -240,14 +277,22 @@ msgstr "Intentar de nuevo"
 msgid "Unable to connect. Please check your internet connection and try again."
 msgstr "No se puede conectar. Por favor, revisa tu conexión a internet e inténtalo de nuevo."
 
+#: src/modules/account/constants/account.constants.ts:5
+msgid "User Name"
+msgstr "Nombre de usuario"
+
 #: src/modules/auth/screens/LoginScreen/constants.ts:4
 msgid "Welcome Back"
 msgstr "Hola de nuevo"
 
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:4
 msgid "Welcome to Bitify"
-msgstr "Welcome to Bitify"
+msgstr "Bienvenido a Bitify"
 
 #: src/shared/hooks/useCleanError.ts:58
 msgid "You've reached the maximum number of requests allowed. Please try again later."
 msgstr "Has alcanzado el número máximo de solicitudes permitidas. Por favor, inténtalo de nuevo más tarde."
+
+#: src/modules/account/constants/account.constants.ts:7
+msgid "Your Pro investment account in the USA"
+msgstr "Tu cuenta de inversión Pro en USA"

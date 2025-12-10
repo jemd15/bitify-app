@@ -110,11 +110,15 @@ msgstr "{message}"
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:7
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:7
 msgid "Already have an account?"
-msgstr ""
+msgstr "Already have an account?"
+
+#: src/modules/account/constants/account.constants.ts:14
+msgid "Authentication"
+msgstr "Authentication"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:14
 msgid "Confirm Password"
-msgstr ""
+msgstr "Confirm Password"
 
 #: src/modules/auth/components/GoogleLoginButton/index.tsx:20
 #~ msgid "Continue with Google"
@@ -125,15 +129,24 @@ msgstr ""
 #: src/modules/auth/screens/LoginScreen/constants.ts:8
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:6
 msgid "Create Account"
-msgstr ""
+msgstr "Create Account"
 
-#: src/modules/auth/components/AuthError/index.tsx:18
+#: src/modules/account/constants/account.constants.ts:11
+msgid "Dark mode, Face ID and keep session"
+msgstr "Dark mode, Face ID and keep session"
+
+#: src/modules/account/constants/account.constants.ts:9
+msgid "Deposits, features and documents"
+msgstr "Deposits, features and documents"
+
+#: src/modules/auth/components/AuthError/index.tsx:25
+#: src/modules/auth/components/AuthError/index.tsx:27
 msgid "Dismiss"
 msgstr "Dismiss"
 
 #: src/modules/auth/screens/LoginScreen/constants.ts:7
 msgid "Don't have an account?"
-msgstr ""
+msgstr "Don't have an account?"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:12
 #: src/modules/auth/components/LoginForm/constants.ts:10
@@ -147,30 +160,42 @@ msgstr "Email is required"
 
 #: src/modules/auth/components/LoginForm/constants.ts:13
 msgid "Forgot Password?"
-msgstr ""
+msgstr "Forgot Password?"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:5
 #: src/modules/auth/components/LoginForm/constants.ts:5
 msgid "Invalid email format"
 msgstr "Invalid email format"
 
+#: src/modules/account/constants/account.constants.ts:8
+msgid "Investments"
+msgstr "Investments"
+
 #: src/modules/auth/components/LoginForm/constants.ts:12
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:8
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:8
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: src/modules/auth/screens/LoginScreen/constants.ts:5
 msgid "Login to your account to continue"
-msgstr ""
+msgstr "Login to your account to continue"
 
 #: src/modules/auth/components/GoogleLoginButton/constants.ts:4
 msgid "Login with Google"
-msgstr ""
+msgstr "Login with Google"
+
+#: src/modules/account/constants/account.constants.ts:12
+msgid "Logout"
+msgstr "Logout"
 
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:5
 msgid "Manage your household tasks easily"
-msgstr ""
+msgstr "Manage your household tasks easily"
+
+#: src/modules/account/constants/account.constants.ts:4
+msgid "My Account"
+msgstr "My Account"
 
 #: src/shared/hooks/useTimeAgo.ts:129
 msgid "now"
@@ -202,11 +227,23 @@ msgstr "Password must be at least 8 characters"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:9
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Passwords do not match"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:8
 msgid "Please confirm your password"
-msgstr ""
+msgstr "Please confirm your password"
+
+#: src/modules/account/constants/account.constants.ts:10
+msgid "Preferences"
+msgstr "Preferences"
+
+#: src/modules/account/constants/account.constants.ts:6
+msgid "Pro Plan"
+msgstr "Pro Plan"
+
+#: src/modules/account/constants/account.constants.ts:13
+msgid "Settings"
+msgstr "Settings"
 
 #: src/modules/auth/components/LoginForm/index.tsx:64
 #~ msgid "Sign In"
@@ -218,7 +255,7 @@ msgstr ""
 
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:5
 msgid "Sign up to get started"
-msgstr ""
+msgstr "Sign up to get started"
 
 #: src/shared/hooks/useCleanError.ts:40
 msgid "The server appears to be experiencing issues. Please try again in a few moments."
@@ -240,14 +277,22 @@ msgstr "Try again"
 msgid "Unable to connect. Please check your internet connection and try again."
 msgstr "Unable to connect. Please check your internet connection and try again."
 
+#: src/modules/account/constants/account.constants.ts:5
+msgid "User Name"
+msgstr "User Name"
+
 #: src/modules/auth/screens/LoginScreen/constants.ts:4
 msgid "Welcome Back"
 msgstr "Welcome Back"
 
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:4
 msgid "Welcome to Bitify"
-msgstr ""
+msgstr "Welcome to Bitify"
 
 #: src/shared/hooks/useCleanError.ts:58
 msgid "You've reached the maximum number of requests allowed. Please try again later."
 msgstr "You've reached the maximum number of requests allowed. Please try again later."
+
+#: src/modules/account/constants/account.constants.ts:7
+msgid "Your Pro investment account in the USA"
+msgstr "Your Pro investment account in the USA"
