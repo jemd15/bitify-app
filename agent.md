@@ -1883,46 +1883,58 @@ export const TaskFilters: React.FC = () => {
 
 ### Implementación de Storage
 
-**Ejemplo de implementación con MMKV**:
+**Ejemplo de implementación con AsyncStorage**:
 
 ```typescript
 // shared/storage/index.ts
-import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class Storage<Scopes extends unknown[], Schema> {
   protected sep = ':';
-  protected store: MMKV;
+  protected storeId: string;
   private listeners = new Map<string, Set<() => void>>();
 
   constructor({ id }: { id: string }) {
-    this.store = new MMKV({ id });
+    this.storeId = id;
   }
 
-  set<Key extends keyof Schema>(scopes: [...Scopes, Key], data: Schema[Key]): void {
-    this.store.set(scopes.join(this.sep), JSON.stringify({ data }));
+  private getKey(scopes: string[]): string {
+    return `${this.storeId}:${scopes.join(this.sep)}`;
+  }
+
+  async set<Key extends keyof Schema>(
+    scopes: [...Scopes, Key],
+    data: Schema[Key],
+  ): Promise<void> {
+    const key = this.getKey(scopes as string[]);
+    await AsyncStorage.setItem(key, JSON.stringify({ data }));
     this.notifyListeners(scopes);
   }
 
-  get<Key extends keyof Schema>(scopes: [...Scopes, Key]): Schema[Key] | undefined {
-    const value = this.store.getString(scopes.join(this.sep));
-    if (!value) return undefined;
+  async get<Key extends keyof Schema>(
+    scopes: [...Scopes, Key],
+  ): Promise<Schema[Key] | undefined> {
+    const key = this.getKey(scopes as string[]);
+    const res = await AsyncStorage.getItem(key);
+    if (!res) return undefined;
     try {
-      const parsed = JSON.parse(value);
-      return parsed.data;
+      return JSON.parse(res).data;
     } catch {
       return undefined;
     }
   }
 
-  remove<Key extends keyof Schema>(scopes: [...Scopes, Key]): void {
-    this.store.delete(scopes.join(this.sep));
+  async remove<Key extends keyof Schema>(scopes: [...Scopes, Key]): Promise<void> {
+    const key = this.getKey(scopes as string[]);
+    await AsyncStorage.removeItem(key);
     this.notifyListeners(scopes);
   }
 
-  removeMany(scopes: Scopes, keys: (keyof Schema)[]): void {
-    keys.forEach(key => {
-      this.remove([...scopes, key] as any);
-    });
+  async removeMany<Key extends keyof Schema>(
+    scopes: [...Scopes],
+    keys: Key[],
+  ): Promise<void> {
+    await Promise.all(keys.map(key => this.remove([...scopes, key])));
   }
 
   addOnValueChangedListener<Key extends keyof Schema>(
@@ -3390,8 +3402,7 @@ const handleSubmit = (data: FormData) => {
 
 ### Storage y Persistencia
 
-- **react-native-mmkv**: Storage rápido y eficiente para React Native (usado en storage persistente)
-- **@react-native-async-storage/async-storage**: AsyncStorage para React Native (usado en React Query persist)
+- **@react-native-async-storage/async-storage**: AsyncStorage para React Native (usado en storage persistente y React Query persist)
 - **@tanstack/query-async-storage-persister**: Persister de React Query para AsyncStorage
 - **@tanstack/react-query-persist-client**: Cliente persistente de React Query
 
