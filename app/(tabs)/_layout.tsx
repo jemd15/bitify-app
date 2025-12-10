@@ -1,7 +1,19 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LoadingSpinner } from '@shared/components';
+import { useAuthSession } from '@modules/auth/hooks/useAuthSession';
 
 export default function TabsLayout() {
+  const { data: session, isLoading } = useAuthSession();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!session) {
+    return <Redirect href="/account/auth" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
