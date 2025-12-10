@@ -52,7 +52,7 @@ Los componentes son funciones que retornan elementos de UI (interfaz de usuario)
    - Solo muestran datos
    - Reciben datos vía props
    - No manejan estado complejo
-   - Ejemplo: `TaskCard`, `Button`, `Input`
+   - Ejemplo: `TaskCard`
 
 2. **Container Components** (Componentes Contenedores):
    - Orquestan lógica y datos
@@ -117,7 +117,7 @@ export const TasksListScreen: React.FC = () => {
   const { data: tasks, isLoading, error } = useTasksList(houseId);
   const coordinator = useTasksCoordinator();
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Spinner size="large" />;
   if (error) return <ErrorMessage error={error} />;
 
   return (
@@ -573,7 +573,7 @@ La carpeta `shared/` contiene código que se usa en múltiples módulos. Es cód
 
 ```
 shared/
-├── components/        # Componentes base reutilizables (Button, Input, Card, ErrorBoundary, etc.)
+├── components/        # Componentes compartidos (ErrorBoundary, ErrorScreen, Skeleton)
 ├── hooks/             # Hooks reutilizables (useTimer, useGetTimeAgo, useAppState, etc.)
 ├── types/             # Tipos compartidos (errors.types.ts)
 ├── constants/         # Constantes globales (errorMessages.ts)
@@ -602,18 +602,14 @@ shared/
 **Ejemplo**:
 
 ```typescript
-// shared/components/Button.tsx
-interface ButtonProps {
-  title: string;
-  onPress: () => void;
-  variant?: 'primary' | 'secondary';
-}
+// modules/tasks/components/TaskCard/index.tsx
+import { Button, ButtonText } from '@gluestack-ui/themed';
 
-export const Button: React.FC<ButtonProps> = ({ title, onPress, variant = 'primary' }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles[variant]}>
-      <Text>{title}</Text>
-    </TouchableOpacity>
+    <Button variant="solid" action="primary" onPress={() => onComplete(task.id)}>
+      <ButtonText>Completar</ButtonText>
+    </Button>
   );
 };
 ```
@@ -909,11 +905,10 @@ src/
 │   ├── scores/            # Sistema de puntuación
 │   └── invitations/       # Sistema de invitaciones
 ├── shared/                # Código compartido entre módulos
-│   ├── components/        # Componentes reutilizables
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
+│   ├── components/        # Componentes compartidos
 │   │   ├── ErrorBoundary.tsx
 │   │   ├── ErrorScreen.tsx
+│   │   ├── Skeleton.tsx
 │   │   └── README.md      # Catálogo de componentes
 │   ├── hooks/             # Hooks reutilizables
 │   │   ├── useAuthSession.ts
@@ -1147,7 +1142,7 @@ modules/{module}/
 // modules/tasks/components/TaskCard/index.tsx
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Button } from '@shared/components/Button';
+import { Button, ButtonText } from '@gluestack-ui/themed';
 import { styles } from './styles';
 
 interface TaskCardProps {
@@ -1160,7 +1155,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onComplete })
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{task.title}</Text>
-      <Button title="Completar" onPress={() => onComplete(task.id)} />
+      <Button variant="solid" action="primary" onPress={() => onComplete(task.id)}>
+        <ButtonText>Completar</ButtonText>
+      </Button>
     </View>
   );
 };
@@ -1221,7 +1218,7 @@ import { View } from 'react-native';
 import { useTasksList } from '../../hooks/useTasksList';
 import { TasksCoordinator } from '../../coordinator/TasksCoordinator';
 import { TaskCard } from '../../components/TaskCard';
-import { LoadingSpinner } from '@shared/components/LoadingSpinner';
+import { Spinner } from '@gluestack-ui/themed';
 import { ErrorScreen } from '@shared/components/ErrorScreen';
 import { styles } from './styles';
 
@@ -1229,7 +1226,7 @@ export const TasksListScreen: React.FC = () => {
   const { data: tasks, isLoading, error } = useTasksList();
   const coordinator = TasksCoordinator;
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Spinner size="large" />;
   if (error) return <ErrorScreen error={error} />;
 
   return (
@@ -1452,37 +1449,52 @@ export const filterTasksByStatus = (tasks: Task[], status: TaskStatus): Task[] =
 
 **Responsabilidades**:
 
-- Componentes reutilizables entre múltiples módulos
-- Componentes de UI base (Button, Input, Card, etc.)
-- Componentes de layout
+- Componentes reutilizables entre múltiples módulos que no tienen equivalente en gluestack-ui
+- Componentes personalizados específicos del proyecto (ErrorBoundary, ErrorScreen, Skeleton)
+- **Nota**: Los componentes de UI base (Button, Input, Card, Divider, Spinner, Toast) deben importarse directamente de `@gluestack-ui/themed`
 
 **Componentes Disponibles**:
 
-- **`Button`**: Botón con variantes (solid, outline, ghost) y colores (primary, secondary, danger)
-- **`Input`**: Campo de texto con label y manejo de errores
 - **`ErrorBoundary`**: Boundary para capturar errores de React
 - **`ErrorScreen`**: Pantalla de error con opción de reintentar
-- **`Divider`**: Separador visual
-- **`LoadingSpinner`**: Indicador de carga
 - **`Skeleton`**: Componentes skeleton para loading states (SkeletonText, SkeletonCircle, SkeletonPill)
-- **`Card`**: Contenedor con sombra
-- **`Toast`**: Sistema de notificaciones toast con tipos (default, success, error, warning, info)
 
-**Importación**:
+**Nota**: Los componentes de UI base (Button, Input, Card, Divider, Spinner, Toast) deben importarse directamente de `@gluestack-ui/themed` en lugar de usar wrappers en `@shared/components`.
+
+**Importación de componentes compartidos**:
+
+```typescript
+import {
+  ErrorBoundary,
+  ErrorScreen,
+  SkeletonText,
+  SkeletonCircle,
+  SkeletonPill,
+} from '@shared/components';
+```
+
+**Importación de componentes de gluestack**:
 
 ```typescript
 import {
   Button,
+  ButtonText,
+  ButtonSpinner,
   Input,
-  ErrorBoundary,
-  ErrorScreen,
+  InputField,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Box,
   Divider,
-  LoadingSpinner,
-  SkeletonText,
-  Card,
-  ToastContainer,
-  showToast,
-} from '@shared/components';
+  Spinner,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  useToast,
+} from '@gluestack-ui/themed';
 ```
 
 ### Documentación de Componentes Compartidos
@@ -1497,49 +1509,36 @@ Todos los componentes compartidos deben estar documentados con:
 **Estructura de Documentación**:
 
 ````typescript
-// shared/components/Button.tsx
+// shared/components/ErrorScreen/index.tsx
 /**
- * Button - Componente de botón reutilizable
+ * ErrorScreen - Pantalla de error reutilizable
  *
  * @example
  * ```tsx
- * <Button
- *   title="Guardar"
- *   onPress={handleSave}
- *   variant="primary"
- *   size="medium"
+ * <ErrorScreen
+ *   title="Error"
+ *   message="Algo salió mal"
+ *   onPressTryAgain={handleRetry}
  * />
  * ```
  *
- * @variants
- * - primary: Botón principal (azul)
- * - secondary: Botón secundario (gris)
- * - danger: Botón de acción destructiva (rojo)
- *
- * @sizes
- * - small: 32px de altura
- * - medium: 44px de altura (default)
- * - large: 56px de altura
+ * @props
+ * - title: Título del error
+ * - message: Mensaje descriptivo
+ * - onPressTryAgain: Función opcional para reintentar
  */
-interface ButtonProps {
-  /** Texto del botón */
+interface ErrorScreenProps {
   title: string;
-  /** Función llamada al presionar */
-  onPress: () => void;
-  /** Variante visual del botón */
-  variant?: 'primary' | 'secondary' | 'danger';
-  /** Tamaño del botón */
-  size?: 'small' | 'medium' | 'large';
-  /** Deshabilitado */
-  disabled?: boolean;
-  /** Label de accesibilidad (por defecto usa title) */
-  accessibilityLabel?: string;
+  message: string;
+  onPressTryAgain?: () => void;
 }
 
-export const Button: React.FC<ButtonProps> = ({ ... }) => {
+export const ErrorScreen: React.FC<ErrorScreenProps> = ({ ... }) => {
   // ...
 };
 ````
+
+**Nota**: Los componentes de UI base (Button, Input, Card, etc.) deben importarse de `@gluestack-ui/themed`. Ver la documentación oficial de gluestack para ejemplos de uso.
 
 **README de Componentes**:
 
@@ -1597,11 +1596,13 @@ Mantener un archivo `shared/components/README.md` con lista de todos los compone
 
 ## Componentes Base
 
-- **Button**: Botón reutilizable con variantes
-- **Input**: Campo de texto con validación
-- **Card**: Contenedor de contenido con sombra
-- **Modal**: Modal reutilizable
-- **LoadingSpinner**: Indicador de carga
+Los componentes de UI base deben importarse directamente de `@gluestack-ui/themed`:
+- **Button**: Botón reutilizable con variantes (Button, ButtonText, ButtonSpinner)
+- **Input**: Campo de texto con validación (Input, InputField, FormControl)
+- **Box**: Contenedor flexible (usado para crear Cards)
+- **Divider**: Separador visual
+- **Spinner**: Indicador de carga
+- **Toast**: Sistema de notificaciones (Toast, ToastTitle, ToastDescription, useToast)
 
 ## Componentes de Layout
 
@@ -2419,13 +2420,13 @@ app/
 // app/(tabs)/_layout.tsx
 import { Redirect } from 'expo-router';
 import { useAuthSession } from '@shared/hooks/useAuthSession';
-import { LoadingSpinner } from '@shared/components/LoadingSpinner';
+import { Spinner } from '@gluestack-ui/themed';
 
 export default function ProtectedLayout() {
   const { data: session, isLoading } = useAuthSession();
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <Spinner size="large" />;
   }
 
   if (!session) {
@@ -3587,66 +3588,58 @@ Bitify debe ser accesible para todos los usuarios, incluyendo aquellos con disca
 
 ### Componentes Accesibles
 
-**Labels y Roles**:
+**Labels y Roles con gluestack**:
 
 ```typescript
-// shared/components/Button.tsx
-import { AccessibilityProps } from 'react-native';
+// Ejemplo usando Button de gluestack
+import { Button, ButtonText } from '@gluestack-ui/themed';
 
-interface ButtonProps extends AccessibilityProps {
-  title: string;
-  onPress: () => void;
-}
-
-export const Button: React.FC<ButtonProps> = ({ title, onPress, accessibilityLabel, ...props }) => {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      accessible={true}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel || title}
-      accessibilityHint="Presiona dos veces para activar"
-      {...props}
-    >
-      <Text>{title}</Text>
-    </TouchableOpacity>
-  );
-};
+<Button
+  variant="solid"
+  action="primary"
+  onPress={handlePress}
+  accessibilityRole="button"
+  accessibilityLabel="Guardar"
+  accessibilityHint="Presiona dos veces para guardar"
+>
+  <ButtonText>Guardar</ButtonText>
+</Button>
 ```
 
-**Inputs Accesibles**:
+**Inputs Accesibles con gluestack**:
 
 ```typescript
-// shared/components/Input.tsx
-export const Input: React.FC<InputProps> = ({ label, error, ...props }) => {
-  return (
-    <View>
-      <Text
-        accessible={true}
-        accessibilityRole="text"
-        accessibilityLabel={label}
-      >
-        {label}
-      </Text>
-      <TextInput
-        {...props}
-        accessible={true}
-        accessibilityLabel={label}
-        accessibilityHint={error ? `Error: ${error}` : undefined}
-        accessibilityState={{ invalid: !!error }}
-      />
-      {error && (
-        <Text
-          accessible={true}
-          accessibilityRole="alert"
-          accessibilityLiveRegion="polite"
-        >
-          {error}
-        </Text>
-      )}
-    </View>
-  );
-};
+// Ejemplo usando Input de gluestack
+import {
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Input,
+  InputField,
+} from '@gluestack-ui/themed';
+
+<FormControl isInvalid={!!error}>
+  <FormControlLabel>
+    <FormControlLabelText>Email</FormControlLabelText>
+  </FormControlLabel>
+  <Input>
+    <InputField
+      value={email}
+      onChangeText={setEmail}
+      accessibilityLabel="Email"
+      accessibilityState={{ invalid: !!error }}
+    />
+  </Input>
+  {error && (
+    <FormControlError>
+      <FormControlErrorText accessibilityRole="alert" accessibilityLiveRegion="polite">
+        {error}
+      </FormControlErrorText>
+    </FormControlError>
+  )}
+</FormControl>
 ```
 
 ### Navegación por Teclado
