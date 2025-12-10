@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   container: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#ffffff',
     flex: 1,
     justifyContent: 'space-between',
     paddingBottom: 40,
@@ -30,22 +30,21 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
   loginLinkButton: {
-    color: '#ffffff',
+    color: '#007AFF',
     fontSize: 16,
     textDecorationLine: 'underline',
   },
   loginLinkText: {
-    color: '#999999',
+    color: '#666',
     fontSize: 16,
   },
   subtitle: {
-    color: '#999999',
+    color: '#666',
     fontSize: 18,
     paddingHorizontal: 20,
     textAlign: 'center',
   },
   title: {
-    color: '#ffffff',
     fontSize: 36,
     fontWeight: 'bold',
     marginBottom: 16,
