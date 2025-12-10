@@ -69,7 +69,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             autoCapitalize="none"
             editable={!isPending}
             accessibilityLabel={LOGIN_FORM_LABELS.EMAIL}
-            accessibilityState={{ invalid: !!errors.email }}
+            accessibilityState={{ disabled: isPending }}
           />
         </Input>
         {errors.email && (
@@ -89,7 +89,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             secureTextEntry
             editable={!isPending}
             accessibilityLabel={LOGIN_FORM_LABELS.PASSWORD}
-            accessibilityState={{ invalid: !!errors.password }}
+            accessibilityState={{ disabled: isPending }}
           />
         </Input>
         {errors.password && (
