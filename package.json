@@ -11,6 +11,7 @@
     "start:dev": "bun run env:dev && bun run start",
     "start:prod": "bun run env:prod && bun run start",
     "config:verify": "npx react-native config",
+    "kill:port": "npx kill-port 8081",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
