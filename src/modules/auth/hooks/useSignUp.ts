@@ -11,7 +11,7 @@ import { SignUpInput } from '../domain/validators/signup.validator';
 export const useSignUp = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Session, Error, SignUpInput>({
+  return useMutation<Session | null, Error, SignUpInput>({
     mutationFn: async (input: SignUpInput) => {
       const { data, error } = await supabase.auth.signUp({
         email: input.email,

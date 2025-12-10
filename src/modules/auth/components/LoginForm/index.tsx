@@ -108,7 +108,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         accessibilityRole="button"
         accessibilityLabel={LOGIN_FORM_LABELS.LOGIN}
         accessibilityState={{ disabled: isPending }}
-        marginBottom="$4"
+        marginBottom="$1"
       >
         {isPending ? (
           <ButtonSpinner />

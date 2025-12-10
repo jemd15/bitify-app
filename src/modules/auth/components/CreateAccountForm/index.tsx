@@ -70,7 +70,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
             autoCapitalize="none"
             editable={!isPending}
             accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.EMAIL}
-            accessibilityState={{ invalid: !!errors.email }}
+            accessibilityState={{ disabled: !!errors.email }}
           />
         </Input>
         {errors.email && (
@@ -92,7 +92,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
             secureTextEntry
             editable={!isPending}
             accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.PASSWORD}
-            accessibilityState={{ invalid: !!errors.password }}
+            accessibilityState={{ disabled: !!errors.password }}
           />
         </Input>
         {errors.password && (
@@ -114,7 +114,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
             secureTextEntry
             editable={!isPending}
             accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.CONFIRM_PASSWORD}
-            accessibilityState={{ invalid: !!errors.confirmPassword }}
+            accessibilityState={{ disabled: !!errors.confirmPassword }}
           />
         </Input>
         {errors.confirmPassword && (

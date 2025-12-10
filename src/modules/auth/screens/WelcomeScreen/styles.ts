@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type ViewStyle } from 'react-native';
 
 export const styles = StyleSheet.create({
   actions: {
@@ -9,9 +9,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     flex: 1,
     justifyContent: 'space-between',
-    paddingBottom: 40,
     paddingHorizontal: 20,
-    paddingTop: 60,
   },
   content: {
     alignItems: 'center',
@@ -27,7 +25,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 4,
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 6,
   },
   loginLinkButton: {
     color: '#007AFF',
@@ -50,4 +48,13 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
+});
+
+export const getContainerStyle = (insets: {
+  top: number;
+  bottom: number;
+}): ViewStyle => ({
+  ...styles.container,
+  paddingTop: insets.top,
+  paddingBottom: insets.bottom + 40,
 });

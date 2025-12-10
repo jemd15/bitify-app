@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, ButtonText } from '@gluestack-ui/themed';
 import { AuthCoordinator } from '@modules/auth/coordinator/AuthCoordinator';
 
-import { styles } from './styles';
+import { styles, getContainerStyle } from './styles';
 import WELCOME_LABELS from './constants';
 
 export const WelcomeScreen: React.FC = () => {
+  const insets = useSafeAreaInsets();
   const handleCreateAccount = () => {
     AuthCoordinator.navigateToCreateAccount();
   };
@@ -15,7 +17,7 @@ export const WelcomeScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={getContainerStyle(insets)}>
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title}>{WELCOME_LABELS.TITLE}</Text>
