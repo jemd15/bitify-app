@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@shared/components/Button';
+import { Button, ButtonText, ButtonSpinner } from '@gluestack-ui/themed';
 import { useGoogleLogin } from '@modules/auth/hooks/useGoogleLogin';
 
 import { GoogleLoginButtonProps } from './types';
@@ -17,11 +17,21 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess 
 
   return (
     <Button
-      title={GOOGLE_LOGIN_BUTTON_LABELS.LOGIN_WITH_GOOGLE}
-      onPress={handlePress}
-      loading={isPending}
-      disabled={isPending}
       variant="outline"
-    />
+      action="primary"
+      size="md"
+      onPress={handlePress}
+      isDisabled={isPending}
+      isFocusVisible={false}
+      accessibilityRole="button"
+      accessibilityLabel={GOOGLE_LOGIN_BUTTON_LABELS.LOGIN_WITH_GOOGLE}
+      accessibilityState={{ disabled: isPending }}
+    >
+      {isPending ? (
+        <ButtonSpinner />
+      ) : (
+        <ButtonText>{GOOGLE_LOGIN_BUTTON_LABELS.LOGIN_WITH_GOOGLE}</ButtonText>
+      )}
+    </Button>
   );
 };

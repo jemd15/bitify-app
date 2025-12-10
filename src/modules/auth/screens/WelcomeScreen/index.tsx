@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Button } from '@shared/components/Button';
+import { Button, ButtonText } from '@gluestack-ui/themed';
 import { AuthCoordinator } from '@modules/auth/coordinator/AuthCoordinator';
 
 import { styles } from './styles';
@@ -25,12 +25,16 @@ export const WelcomeScreen: React.FC = () => {
 
       <View style={styles.actions}>
         <Button
-          title={WELCOME_LABELS.CREATE_ACCOUNT}
-          onPress={handleCreateAccount}
           variant="solid"
-          color="primary"
-          size="large"
-        />
+          action="primary"
+          size="lg"
+          onPress={handleCreateAccount}
+          isFocusVisible={false}
+          accessibilityRole="button"
+          accessibilityLabel={WELCOME_LABELS.CREATE_ACCOUNT}
+        >
+          <ButtonText>{WELCOME_LABELS.CREATE_ACCOUNT}</ButtonText>
+        </Button>
         <Pressable onPress={handleLogin} style={styles.loginLink}>
           <Text style={styles.loginLinkText}>{WELCOME_LABELS.ALREADY_HAVE_ACCOUNT}</Text>
           <Text style={styles.loginLinkButton}>{WELCOME_LABELS.LOGIN}</Text>

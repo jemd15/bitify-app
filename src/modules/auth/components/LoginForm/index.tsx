@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Input } from '@shared/components/Input';
-import { Button } from '@shared/components/Button';
+import {
+  Button,
+  ButtonText,
+  ButtonSpinner,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Input,
+  InputField,
+} from '@gluestack-ui/themed';
 import { useLogin } from '@modules/auth/hooks/useLogin';
 import { loginSchema } from '@modules/auth/domain/validators/login.validator';
 import type { LoginInput } from '@modules/auth/domain/validators/login.validator';
@@ -47,29 +57,65 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
 
   return (
     <View>
-      <Input
-        label={LOGIN_FORM_LABELS.EMAIL}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        error={errors.email}
-        editable={!isPending}
-      />
-      <Input
-        label={LOGIN_FORM_LABELS.PASSWORD}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        error={errors.password}
-        editable={!isPending}
-      />
+      <FormControl isInvalid={!!errors.email} marginBottom="$4">
+        <FormControlLabel>
+          <FormControlLabelText>{LOGIN_FORM_LABELS.EMAIL}</FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            editable={!isPending}
+            accessibilityLabel={LOGIN_FORM_LABELS.EMAIL}
+            accessibilityState={{ invalid: !!errors.email }}
+          />
+        </Input>
+        {errors.email && (
+          <FormControlError>
+            <FormControlErrorText>{errors.email}</FormControlErrorText>
+          </FormControlError>
+        )}
+      </FormControl>
+      <FormControl isInvalid={!!errors.password} marginBottom="$4">
+        <FormControlLabel>
+          <FormControlLabelText>{LOGIN_FORM_LABELS.PASSWORD}</FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            editable={!isPending}
+            accessibilityLabel={LOGIN_FORM_LABELS.PASSWORD}
+            accessibilityState={{ invalid: !!errors.password }}
+          />
+        </Input>
+        {errors.password && (
+          <FormControlError>
+            <FormControlErrorText>{errors.password}</FormControlErrorText>
+          </FormControlError>
+        )}
+      </FormControl>
       <Button
-        title={LOGIN_FORM_LABELS.LOGIN}
+        variant="solid"
+        action="primary"
+        size="md"
         onPress={handleSubmit}
-        loading={isPending}
-        disabled={isPending}
-      />
+        isDisabled={isPending}
+        isFocusVisible={false}
+        accessibilityRole="button"
+        accessibilityLabel={LOGIN_FORM_LABELS.LOGIN}
+        accessibilityState={{ disabled: isPending }}
+        marginBottom="$4"
+      >
+        {isPending ? (
+          <ButtonSpinner />
+        ) : (
+          <ButtonText>{LOGIN_FORM_LABELS.LOGIN}</ButtonText>
+        )}
+      </Button>
       <Pressable onPress={handleForgotPassword}>
         <Text style={styles.forgotPasswordText}>{LOGIN_FORM_LABELS.FORGOT_PASSWORD}</Text>
       </Pressable>

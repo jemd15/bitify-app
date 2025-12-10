@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { Input } from '@shared/components/Input';
-import { Button } from '@shared/components/Button';
+import {
+  Button,
+  ButtonText,
+  ButtonSpinner,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Input,
+  InputField,
+} from '@gluestack-ui/themed';
 import { useSignUp } from '@modules/auth/hooks/useSignUp';
 import { signupSchema } from '@modules/auth/domain/validators/signup.validator';
 import type { SignUpInput } from '@modules/auth/domain/validators/signup.validator';
@@ -48,37 +58,88 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
 
   return (
     <View>
-      <Input
-        label={CREATE_ACCOUNT_FORM_LABELS.EMAIL}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        error={errors.email}
-        editable={!isPending}
-      />
-      <Input
-        label={CREATE_ACCOUNT_FORM_LABELS.PASSWORD}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        error={errors.password}
-        editable={!isPending}
-      />
-      <Input
-        label={CREATE_ACCOUNT_FORM_LABELS.CONFIRM_PASSWORD}
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        error={errors.confirmPassword}
-        editable={!isPending}
-      />
+      <FormControl isInvalid={!!errors.email} marginBottom="$4">
+        <FormControlLabel>
+          <FormControlLabelText>{CREATE_ACCOUNT_FORM_LABELS.EMAIL}</FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            editable={!isPending}
+            accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.EMAIL}
+            accessibilityState={{ invalid: !!errors.email }}
+          />
+        </Input>
+        {errors.email && (
+          <FormControlError>
+            <FormControlErrorText>{errors.email}</FormControlErrorText>
+          </FormControlError>
+        )}
+      </FormControl>
+      <FormControl isInvalid={!!errors.password} marginBottom="$4">
+        <FormControlLabel>
+          <FormControlLabelText>
+            {CREATE_ACCOUNT_FORM_LABELS.PASSWORD}
+          </FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            editable={!isPending}
+            accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.PASSWORD}
+            accessibilityState={{ invalid: !!errors.password }}
+          />
+        </Input>
+        {errors.password && (
+          <FormControlError>
+            <FormControlErrorText>{errors.password}</FormControlErrorText>
+          </FormControlError>
+        )}
+      </FormControl>
+      <FormControl isInvalid={!!errors.confirmPassword} marginBottom="$4">
+        <FormControlLabel>
+          <FormControlLabelText>
+            {CREATE_ACCOUNT_FORM_LABELS.CONFIRM_PASSWORD}
+          </FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            editable={!isPending}
+            accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.CONFIRM_PASSWORD}
+            accessibilityState={{ invalid: !!errors.confirmPassword }}
+          />
+        </Input>
+        {errors.confirmPassword && (
+          <FormControlError>
+            <FormControlErrorText>{errors.confirmPassword}</FormControlErrorText>
+          </FormControlError>
+        )}
+      </FormControl>
       <Button
-        title={CREATE_ACCOUNT_FORM_LABELS.CREATE_ACCOUNT}
+        variant="solid"
+        action="primary"
+        size="md"
         onPress={handleSubmit}
-        loading={isPending}
-        disabled={isPending}
-      />
+        isDisabled={isPending}
+        isFocusVisible={false}
+        accessibilityRole="button"
+        accessibilityLabel={CREATE_ACCOUNT_FORM_LABELS.CREATE_ACCOUNT}
+        accessibilityState={{ disabled: isPending }}
+      >
+        {isPending ? (
+          <ButtonSpinner />
+        ) : (
+          <ButtonText>{CREATE_ACCOUNT_FORM_LABELS.CREATE_ACCOUNT}</ButtonText>
+        )}
+      </Button>
     </View>
   );
 };
