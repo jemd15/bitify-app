@@ -25,7 +25,7 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     fetchSession();
-  }, [queryClient]);
+  }, []);
 
   return (
     <GluestackUIProvider config={config}>
