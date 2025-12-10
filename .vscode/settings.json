@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["bitify", "RQKEY"],
+  "cSpell.words": ["bitify", "gluestack", "RQKEY"],
   "eslint.useFlatConfig": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "editor.codeActionsOnSave": {
