@@ -20,7 +20,8 @@
     "format": "prettier . --write && npm run lint:fix",
     "format:check": "prettier . --check && npm run lint",
     "i18n:extract": "lingui extract",
-    "i18n:compile": "lingui compile"
+    "i18n:compile": "lingui compile",
+    "build:dev": "eas build --profile development --platform android"
   },
   "dependencies": {
     "@gluestack-style/react": "^1.0.57",
