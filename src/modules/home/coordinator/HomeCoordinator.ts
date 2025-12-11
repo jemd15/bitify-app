@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { logger } from '@shared/logger';
 
 export class HomeCoordinator {
   /**
@@ -13,6 +14,6 @@ export class HomeCoordinator {
    */
   static navigateToSection(section: string) {
     // Future navigation logic for home sections
-    console.log(`Navigating to section: ${section}`);
+    logger.log(`Navigating to section: ${section}`);
   }
 }

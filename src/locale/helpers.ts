@@ -17,7 +17,7 @@ export function formatNumber(value: number, locale: AppLanguage): string {
 export function formatCurrency(
   value: number,
   locale: AppLanguage,
-  currency = 'EUR',
+  currency = 'CLP',
 ): string {
   return new Intl.NumberFormat(locale === AppLanguage.ES ? 'es-ES' : 'en-US', {
     style: 'currency',

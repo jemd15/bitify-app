@@ -9,7 +9,8 @@
       "@store/*": ["src/store/*"],
       "@shared/*": ["src/shared/*"],
       "@app/*": ["src/app/*"],
-      "@locale/*": ["src/locale/*"]
+      "@locale/*": ["src/locale/*"],
+      "@src/*": ["src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "src/shared/types/env.d.ts"]

@@ -2,46 +2,317 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language: \n"
+"Language-Team: \n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
-msgid "Try again"
-msgstr "Try again"
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:163
+msgid "{0, plural, one {# day} other {# days}}"
+msgstr "{0, plural, one {# day} other {# days}}"
 
-msgid "Oh no!"
-msgstr "Oh no!"
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:153
+msgid "{0, plural, one {# hour} other {# hours}}"
+msgstr "{0, plural, one {# hour} other {# hours}}"
 
-msgid "There was an unexpected issue in the application. Please let us know if this happened to you!"
-msgstr "There was an unexpected issue in the application. Please let us know if this happened to you!"
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:143
+msgid "{0, plural, one {# minute} other {# minutes}}"
+msgstr "{0, plural, one {# minute} other {# minutes}}"
 
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:174
+msgid "{0, plural, one {# month} other {# months}}"
+msgstr "{0, plural, one {# month} other {# months}}"
+
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:133
+msgid "{0, plural, one {# second} other {# seconds}}"
+msgstr "{0, plural, one {# second} other {# seconds}}"
+
+#. How many months have passed, displayed in a narrow form
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:176
+msgid "{0, plural, one {#mo} other {#mo}}"
+msgstr "{0, plural, one {#mo} other {#mo}}"
+
+#: src/modules/auth/screens/LoginScreen/index.tsx:20
+#: src/modules/auth/screens/LoginScreen/index.tsx:23
+#: src/modules/auth/screens/LoginScreen/index.tsx:31
+#~ msgid "{0}"
+#~ msgstr ""
+
+#. How many days have passed, displayed in a narrow form
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:165
+msgid "{0}d"
+msgstr "{0}d"
+
+#. How many hours have passed, displayed in a narrow form
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:155
+msgid "{0}h"
+msgstr "{0}h"
+
+#. How many minutes have passed, displayed in a narrow form
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:145
+msgid "{0}m"
+msgstr "{0}m"
+
+#. How many seconds have passed, displayed in a narrow form
+#. placeholder {0}: diff.value
+#: src/shared/hooks/useTimeAgo.ts:135
+msgid "{0}s"
+msgstr "{0}s"
+
+#: src/modules/auth/components/AuthError/index.tsx:15
+msgid "{message}"
+msgstr "{message}"
+
+#~ msgid "# day"
+#~ msgstr "# day"
+
+#~ msgid "# days"
+#~ msgstr "# days"
+
+#~ msgid "# hour"
+#~ msgstr "# hour"
+
+#~ msgid "# hours"
+#~ msgstr "# hours"
+
+#~ msgid "# minute"
+#~ msgstr "# minute"
+
+#~ msgid "# minutes"
+#~ msgstr "# minutes"
+
+#~ msgid "# month"
+#~ msgstr "# month"
+
+#~ msgid "# months"
+#~ msgstr "# months"
+
+#~ msgid "# second"
+#~ msgstr "# second"
+
+#~ msgid "# seconds"
+#~ msgstr "# seconds"
+
+#: src/modules/auth/screens/CreateAccountScreen/constants.ts:7
+#: src/modules/auth/screens/WelcomeScreen/constants.ts:7
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+#: src/modules/account/constants/account.constants.ts:14
+msgid "Authentication"
+msgstr "Authentication"
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:18
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+#: src/modules/auth/components/GoogleLoginButton/constants.ts:4
+msgid "Continue with Google"
+msgstr "Continue with Google"
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:19
+#: src/modules/auth/screens/CreateAccountScreen/constants.ts:4
+#: src/modules/auth/screens/LoginScreen/constants.ts:8
+#: src/modules/auth/screens/WelcomeScreen/constants.ts:6
+msgid "Create Account"
+msgstr "Create Account"
+
+#: src/modules/account/constants/account.constants.ts:11
+msgid "Dark mode, Face ID and keep session"
+msgstr "Dark mode, Face ID and keep session"
+
+#: src/modules/account/constants/account.constants.ts:9
+msgid "Deposits, features and documents"
+msgstr "Deposits, features and documents"
+
+#: src/modules/auth/components/AuthError/index.tsx:25
+#: src/modules/auth/components/AuthError/index.tsx:27
+msgid "Dismiss"
+msgstr "Dismiss"
+
+#: src/modules/auth/screens/LoginScreen/constants.ts:7
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:16
+#: src/modules/auth/components/LoginForm/constants.ts:14
+msgid "Email"
+msgstr "Email"
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:4
+#: src/modules/auth/components/LoginForm/constants.ts:4
+msgid "Email is required"
+msgstr "Email is required"
+
+#: src/modules/auth/components/LoginForm/constants.ts:17
+msgid "Forgot Password?"
+msgstr "Forgot Password?"
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:5
+#: src/modules/auth/components/LoginForm/constants.ts:5
+msgid "Invalid email format"
+msgstr "Invalid email format"
+
+#: src/modules/account/constants/account.constants.ts:8
+msgid "Investments"
+msgstr "Investments"
+
+#: src/modules/auth/components/LoginForm/constants.ts:16
+#: src/modules/auth/screens/CreateAccountScreen/constants.ts:8
+#: src/modules/auth/screens/WelcomeScreen/constants.ts:8
+msgid "Login"
+msgstr "Login"
+
+#: src/modules/auth/screens/LoginScreen/constants.ts:5
+msgid "Login to your account to continue"
+msgstr "Login to your account to continue"
+
+#: src/modules/auth/components/GoogleLoginButton/constants.ts:4
+#~ msgid "Login with Google"
+#~ msgstr "Login with Google"
+
+#: src/modules/account/constants/account.constants.ts:12
+msgid "Logout"
+msgstr "Logout"
+
+#: src/modules/auth/screens/WelcomeScreen/constants.ts:5
+msgid "Manage your household tasks easily"
+msgstr "Manage your household tasks easily"
+
+#: src/modules/account/constants/account.constants.ts:4
+msgid "My Account"
+msgstr "My Account"
+
+#: src/shared/hooks/useTimeAgo.ts:129
 msgid "now"
 msgstr "now"
 
-msgid "# second"
-msgstr "# second"
+#: src/shared/components/ErrorBoundary/index.tsx:57
+msgid "Oh no!"
+msgstr "Oh no!"
 
-msgid "# seconds"
-msgstr "# seconds"
+#: src/modules/auth/screens/CreateAccountScreen/constants.ts:6
+#: src/modules/auth/screens/LoginScreen/constants.ts:6
+msgid "or"
+msgstr "or"
 
-msgid "# minute"
-msgstr "# minute"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:17
+#: src/modules/auth/components/LoginForm/constants.ts:15
+msgid "Password"
+msgstr "Password"
 
-msgid "# minutes"
-msgstr "# minutes"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:6
+#: src/modules/auth/components/LoginForm/constants.ts:6
+msgid "Password is required"
+msgstr "Password is required"
 
-msgid "# hour"
-msgstr "# hour"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:7
+#: src/modules/auth/components/LoginForm/constants.ts:7
+msgid "Password must be at least 6 characters"
+msgstr "Password must be at least 6 characters"
 
-msgid "# hours"
-msgstr "# hours"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:10
+#: src/modules/auth/components/LoginForm/constants.ts:10
+msgid "Password must contain at least one digit"
+msgstr ""
 
-msgid "# day"
-msgstr "# day"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:8
+#: src/modules/auth/components/LoginForm/constants.ts:8
+msgid "Password must contain at least one lowercase letter"
+msgstr ""
 
-msgid "# days"
-msgstr "# days"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:11
+#: src/modules/auth/components/LoginForm/constants.ts:11
+msgid "Password must contain at least one special character"
+msgstr ""
 
-msgid "# month"
-msgstr "# month"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:9
+#: src/modules/auth/components/LoginForm/constants.ts:9
+msgid "Password must contain at least one uppercase letter"
+msgstr ""
 
-msgid "# months"
-msgstr "# months"
+#: src/modules/auth/components/CreateAccountForm/constants.ts:13
+msgid "Passwords do not match"
+msgstr "Passwords do not match"
 
+#: src/modules/auth/components/CreateAccountForm/constants.ts:12
+msgid "Please confirm your password"
+msgstr "Please confirm your password"
+
+#: src/modules/account/constants/account.constants.ts:10
+msgid "Preferences"
+msgstr "Preferences"
+
+#: src/modules/account/constants/account.constants.ts:6
+msgid "Pro Plan"
+msgstr "Pro Plan"
+
+#: src/modules/account/constants/account.constants.ts:13
+msgid "Settings"
+msgstr "Settings"
+
+#: src/modules/auth/components/LoginForm/index.tsx:64
+#~ msgid "Sign In"
+#~ msgstr "Sign In"
+
+#: src/modules/auth/screens/LoginScreen/constants.ts:5
+#~ msgid "Sign in to continue"
+#~ msgstr "Sign in to continue"
+
+#: src/modules/auth/screens/CreateAccountScreen/constants.ts:5
+msgid "Sign up to get started"
+msgstr "Sign up to get started"
+
+#: src/shared/hooks/useCleanError.ts:40
+msgid "The server appears to be experiencing issues. Please try again in a few moments."
+msgstr "The server appears to be experiencing issues. Please try again in a few moments."
+
+#: src/shared/components/ErrorBoundary/index.tsx:59
+msgid "There was an unexpected issue in the application. Please let us know if this happened to you!"
+msgstr "There was an unexpected issue in the application. Please let us know if this happened to you!"
+
+#: src/shared/hooks/useCleanError.ts:49
+msgid "This feature is not available while using an app password. Please sign in with your main password."
+msgstr "This feature is not available while using an app password. Please sign in with your main password."
+
+#: src/shared/components/ErrorScreen/index.tsx:46
+msgid "Try again"
+msgstr "Try again"
+
+#: src/shared/hooks/useCleanError.ts:27
+msgid "Unable to connect. Please check your internet connection and try again."
+msgstr "Unable to connect. Please check your internet connection and try again."
+
+#: src/modules/account/constants/account.constants.ts:5
+msgid "User Name"
+msgstr "User Name"
+
+#: src/modules/auth/screens/LoginScreen/constants.ts:4
+msgid "Welcome Back"
+msgstr "Welcome Back"
+
+#: src/modules/auth/screens/WelcomeScreen/constants.ts:4
+msgid "Welcome to Bitify"
+msgstr "Welcome to Bitify"
+
+#: src/shared/hooks/useCleanError.ts:58
+msgid "You've reached the maximum number of requests allowed. Please try again later."
+msgstr "You've reached the maximum number of requests allowed. Please try again later."
+
+#: src/modules/account/constants/account.constants.ts:7
+msgid "Your Pro investment account in the USA"
+msgstr "Your Pro investment account in the USA"

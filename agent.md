@@ -52,7 +52,7 @@ Los componentes son funciones que retornan elementos de UI (interfaz de usuario)
    - Solo muestran datos
    - Reciben datos vía props
    - No manejan estado complejo
-   - Ejemplo: `TaskCard`, `Button`, `Input`
+   - Ejemplo: `TaskCard`
 
 2. **Container Components** (Componentes Contenedores):
    - Orquestan lógica y datos
@@ -117,7 +117,7 @@ export const TasksListScreen: React.FC = () => {
   const { data: tasks, isLoading, error } = useTasksList(houseId);
   const coordinator = useTasksCoordinator();
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Spinner size="large" />;
   if (error) return <ErrorMessage error={error} />;
 
   return (
@@ -573,7 +573,7 @@ La carpeta `shared/` contiene código que se usa en múltiples módulos. Es cód
 
 ```
 shared/
-├── components/        # Componentes base reutilizables (Button, Input, Card, ErrorBoundary, etc.)
+├── components/        # Componentes compartidos (ErrorBoundary, ErrorScreen, Skeleton)
 ├── hooks/             # Hooks reutilizables (useTimer, useGetTimeAgo, useAppState, etc.)
 ├── types/             # Tipos compartidos (errors.types.ts)
 ├── constants/         # Constantes globales (errorMessages.ts)
@@ -602,18 +602,14 @@ shared/
 **Ejemplo**:
 
 ```typescript
-// shared/components/Button.tsx
-interface ButtonProps {
-  title: string;
-  onPress: () => void;
-  variant?: 'primary' | 'secondary';
-}
+// modules/tasks/components/TaskCard/index.tsx
+import { Button, ButtonText } from '@gluestack-ui/themed';
 
-export const Button: React.FC<ButtonProps> = ({ title, onPress, variant = 'primary' }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles[variant]}>
-      <Text>{title}</Text>
-    </TouchableOpacity>
+    <Button variant="solid" action="primary" onPress={() => onComplete(task.id)}>
+      <ButtonText>Completar</ButtonText>
+    </Button>
   );
 };
 ```
@@ -909,11 +905,10 @@ src/
 │   ├── scores/            # Sistema de puntuación
 │   └── invitations/       # Sistema de invitaciones
 ├── shared/                # Código compartido entre módulos
-│   ├── components/        # Componentes reutilizables
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
+│   ├── components/        # Componentes compartidos
 │   │   ├── ErrorBoundary.tsx
 │   │   ├── ErrorScreen.tsx
+│   │   ├── Skeleton.tsx
 │   │   └── README.md      # Catálogo de componentes
 │   ├── hooks/             # Hooks reutilizables
 │   │   ├── useAuthSession.ts
@@ -1147,7 +1142,7 @@ modules/{module}/
 // modules/tasks/components/TaskCard/index.tsx
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Button } from '@shared/components/Button';
+import { Button, ButtonText } from '@gluestack-ui/themed';
 import { styles } from './styles';
 
 interface TaskCardProps {
@@ -1160,7 +1155,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onComplete })
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{task.title}</Text>
-      <Button title="Completar" onPress={() => onComplete(task.id)} />
+      <Button variant="solid" action="primary" onPress={() => onComplete(task.id)}>
+        <ButtonText>Completar</ButtonText>
+      </Button>
     </View>
   );
 };
@@ -1221,7 +1218,7 @@ import { View } from 'react-native';
 import { useTasksList } from '../../hooks/useTasksList';
 import { TasksCoordinator } from '../../coordinator/TasksCoordinator';
 import { TaskCard } from '../../components/TaskCard';
-import { LoadingSpinner } from '@shared/components/LoadingSpinner';
+import { Spinner } from '@gluestack-ui/themed';
 import { ErrorScreen } from '@shared/components/ErrorScreen';
 import { styles } from './styles';
 
@@ -1229,7 +1226,7 @@ export const TasksListScreen: React.FC = () => {
   const { data: tasks, isLoading, error } = useTasksList();
   const coordinator = TasksCoordinator;
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Spinner size="large" />;
   if (error) return <ErrorScreen error={error} />;
 
   return (
@@ -1452,37 +1449,52 @@ export const filterTasksByStatus = (tasks: Task[], status: TaskStatus): Task[] =
 
 **Responsabilidades**:
 
-- Componentes reutilizables entre múltiples módulos
-- Componentes de UI base (Button, Input, Card, etc.)
-- Componentes de layout
+- Componentes reutilizables entre múltiples módulos que no tienen equivalente en gluestack-ui
+- Componentes personalizados específicos del proyecto (ErrorBoundary, ErrorScreen, Skeleton)
+- **Nota**: Los componentes de UI base (Button, Input, Card, Divider, Spinner, Toast) deben importarse directamente de `@gluestack-ui/themed`
 
 **Componentes Disponibles**:
 
-- **`Button`**: Botón con variantes (solid, outline, ghost) y colores (primary, secondary, danger)
-- **`Input`**: Campo de texto con label y manejo de errores
 - **`ErrorBoundary`**: Boundary para capturar errores de React
 - **`ErrorScreen`**: Pantalla de error con opción de reintentar
-- **`Divider`**: Separador visual
-- **`LoadingSpinner`**: Indicador de carga
 - **`Skeleton`**: Componentes skeleton para loading states (SkeletonText, SkeletonCircle, SkeletonPill)
-- **`Card`**: Contenedor con sombra
-- **`Toast`**: Sistema de notificaciones toast con tipos (default, success, error, warning, info)
 
-**Importación**:
+**Nota**: Los componentes de UI base (Button, Input, Card, Divider, Spinner, Toast) deben importarse directamente de `@gluestack-ui/themed` en lugar de usar wrappers en `@shared/components`.
+
+**Importación de componentes compartidos**:
+
+```typescript
+import {
+  ErrorBoundary,
+  ErrorScreen,
+  SkeletonText,
+  SkeletonCircle,
+  SkeletonPill,
+} from '@shared/components';
+```
+
+**Importación de componentes de gluestack**:
 
 ```typescript
 import {
   Button,
+  ButtonText,
+  ButtonSpinner,
   Input,
-  ErrorBoundary,
-  ErrorScreen,
+  InputField,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Box,
   Divider,
-  LoadingSpinner,
-  SkeletonText,
-  Card,
-  ToastContainer,
-  showToast,
-} from '@shared/components';
+  Spinner,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  useToast,
+} from '@gluestack-ui/themed';
 ```
 
 ### Documentación de Componentes Compartidos
@@ -1497,49 +1509,36 @@ Todos los componentes compartidos deben estar documentados con:
 **Estructura de Documentación**:
 
 ````typescript
-// shared/components/Button.tsx
+// shared/components/ErrorScreen/index.tsx
 /**
- * Button - Componente de botón reutilizable
+ * ErrorScreen - Pantalla de error reutilizable
  *
  * @example
  * ```tsx
- * <Button
- *   title="Guardar"
- *   onPress={handleSave}
- *   variant="primary"
- *   size="medium"
+ * <ErrorScreen
+ *   title="Error"
+ *   message="Algo salió mal"
+ *   onPressTryAgain={handleRetry}
  * />
  * ```
  *
- * @variants
- * - primary: Botón principal (azul)
- * - secondary: Botón secundario (gris)
- * - danger: Botón de acción destructiva (rojo)
- *
- * @sizes
- * - small: 32px de altura
- * - medium: 44px de altura (default)
- * - large: 56px de altura
+ * @props
+ * - title: Título del error
+ * - message: Mensaje descriptivo
+ * - onPressTryAgain: Función opcional para reintentar
  */
-interface ButtonProps {
-  /** Texto del botón */
+interface ErrorScreenProps {
   title: string;
-  /** Función llamada al presionar */
-  onPress: () => void;
-  /** Variante visual del botón */
-  variant?: 'primary' | 'secondary' | 'danger';
-  /** Tamaño del botón */
-  size?: 'small' | 'medium' | 'large';
-  /** Deshabilitado */
-  disabled?: boolean;
-  /** Label de accesibilidad (por defecto usa title) */
-  accessibilityLabel?: string;
+  message: string;
+  onPressTryAgain?: () => void;
 }
 
-export const Button: React.FC<ButtonProps> = ({ ... }) => {
+export const ErrorScreen: React.FC<ErrorScreenProps> = ({ ... }) => {
   // ...
 };
 ````
+
+**Nota**: Los componentes de UI base (Button, Input, Card, etc.) deben importarse de `@gluestack-ui/themed`. Ver la documentación oficial de gluestack para ejemplos de uso.
 
 **README de Componentes**:
 
@@ -1597,11 +1596,13 @@ Mantener un archivo `shared/components/README.md` con lista de todos los compone
 
 ## Componentes Base
 
-- **Button**: Botón reutilizable con variantes
-- **Input**: Campo de texto con validación
-- **Card**: Contenedor de contenido con sombra
-- **Modal**: Modal reutilizable
-- **LoadingSpinner**: Indicador de carga
+Los componentes de UI base deben importarse directamente de `@gluestack-ui/themed`:
+- **Button**: Botón reutilizable con variantes (Button, ButtonText, ButtonSpinner)
+- **Input**: Campo de texto con validación (Input, InputField, FormControl)
+- **Box**: Contenedor flexible (usado para crear Cards)
+- **Divider**: Separador visual
+- **Spinner**: Indicador de carga
+- **Toast**: Sistema de notificaciones (Toast, ToastTitle, ToastDescription, useToast)
 
 ## Componentes de Layout
 
@@ -1883,46 +1884,58 @@ export const TaskFilters: React.FC = () => {
 
 ### Implementación de Storage
 
-**Ejemplo de implementación con MMKV**:
+**Ejemplo de implementación con AsyncStorage**:
 
 ```typescript
 // shared/storage/index.ts
-import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class Storage<Scopes extends unknown[], Schema> {
   protected sep = ':';
-  protected store: MMKV;
+  protected storeId: string;
   private listeners = new Map<string, Set<() => void>>();
 
   constructor({ id }: { id: string }) {
-    this.store = new MMKV({ id });
+    this.storeId = id;
   }
 
-  set<Key extends keyof Schema>(scopes: [...Scopes, Key], data: Schema[Key]): void {
-    this.store.set(scopes.join(this.sep), JSON.stringify({ data }));
+  private getKey(scopes: string[]): string {
+    return `${this.storeId}:${scopes.join(this.sep)}`;
+  }
+
+  async set<Key extends keyof Schema>(
+    scopes: [...Scopes, Key],
+    data: Schema[Key],
+  ): Promise<void> {
+    const key = this.getKey(scopes as string[]);
+    await AsyncStorage.setItem(key, JSON.stringify({ data }));
     this.notifyListeners(scopes);
   }
 
-  get<Key extends keyof Schema>(scopes: [...Scopes, Key]): Schema[Key] | undefined {
-    const value = this.store.getString(scopes.join(this.sep));
-    if (!value) return undefined;
+  async get<Key extends keyof Schema>(
+    scopes: [...Scopes, Key],
+  ): Promise<Schema[Key] | undefined> {
+    const key = this.getKey(scopes as string[]);
+    const res = await AsyncStorage.getItem(key);
+    if (!res) return undefined;
     try {
-      const parsed = JSON.parse(value);
-      return parsed.data;
+      return JSON.parse(res).data;
     } catch {
       return undefined;
     }
   }
 
-  remove<Key extends keyof Schema>(scopes: [...Scopes, Key]): void {
-    this.store.delete(scopes.join(this.sep));
+  async remove<Key extends keyof Schema>(scopes: [...Scopes, Key]): Promise<void> {
+    const key = this.getKey(scopes as string[]);
+    await AsyncStorage.removeItem(key);
     this.notifyListeners(scopes);
   }
 
-  removeMany(scopes: Scopes, keys: (keyof Schema)[]): void {
-    keys.forEach(key => {
-      this.remove([...scopes, key] as any);
-    });
+  async removeMany<Key extends keyof Schema>(
+    scopes: [...Scopes],
+    keys: Key[],
+  ): Promise<void> {
+    await Promise.all(keys.map(key => this.remove([...scopes, key])));
   }
 
   addOnValueChangedListener<Key extends keyof Schema>(
@@ -2407,13 +2420,13 @@ app/
 // app/(tabs)/_layout.tsx
 import { Redirect } from 'expo-router';
 import { useAuthSession } from '@shared/hooks/useAuthSession';
-import { LoadingSpinner } from '@shared/components/LoadingSpinner';
+import { Spinner } from '@gluestack-ui/themed';
 
 export default function ProtectedLayout() {
   const { data: session, isLoading } = useAuthSession();
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <Spinner size="large" />;
   }
 
   if (!session) {
@@ -3390,8 +3403,7 @@ const handleSubmit = (data: FormData) => {
 
 ### Storage y Persistencia
 
-- **react-native-mmkv**: Storage rápido y eficiente para React Native (usado en storage persistente)
-- **@react-native-async-storage/async-storage**: AsyncStorage para React Native (usado en React Query persist)
+- **@react-native-async-storage/async-storage**: AsyncStorage para React Native (usado en storage persistente y React Query persist)
 - **@tanstack/query-async-storage-persister**: Persister de React Query para AsyncStorage
 - **@tanstack/react-query-persist-client**: Cliente persistente de React Query
 
@@ -3576,66 +3588,58 @@ Bitify debe ser accesible para todos los usuarios, incluyendo aquellos con disca
 
 ### Componentes Accesibles
 
-**Labels y Roles**:
+**Labels y Roles con gluestack**:
 
 ```typescript
-// shared/components/Button.tsx
-import { AccessibilityProps } from 'react-native';
+// Ejemplo usando Button de gluestack
+import { Button, ButtonText } from '@gluestack-ui/themed';
 
-interface ButtonProps extends AccessibilityProps {
-  title: string;
-  onPress: () => void;
-}
-
-export const Button: React.FC<ButtonProps> = ({ title, onPress, accessibilityLabel, ...props }) => {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      accessible={true}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel || title}
-      accessibilityHint="Presiona dos veces para activar"
-      {...props}
-    >
-      <Text>{title}</Text>
-    </TouchableOpacity>
-  );
-};
+<Button
+  variant="solid"
+  action="primary"
+  onPress={handlePress}
+  accessibilityRole="button"
+  accessibilityLabel="Guardar"
+  accessibilityHint="Presiona dos veces para guardar"
+>
+  <ButtonText>Guardar</ButtonText>
+</Button>
 ```
 
-**Inputs Accesibles**:
+**Inputs Accesibles con gluestack**:
 
 ```typescript
-// shared/components/Input.tsx
-export const Input: React.FC<InputProps> = ({ label, error, ...props }) => {
-  return (
-    <View>
-      <Text
-        accessible={true}
-        accessibilityRole="text"
-        accessibilityLabel={label}
-      >
-        {label}
-      </Text>
-      <TextInput
-        {...props}
-        accessible={true}
-        accessibilityLabel={label}
-        accessibilityHint={error ? `Error: ${error}` : undefined}
-        accessibilityState={{ invalid: !!error }}
-      />
-      {error && (
-        <Text
-          accessible={true}
-          accessibilityRole="alert"
-          accessibilityLiveRegion="polite"
-        >
-          {error}
-        </Text>
-      )}
-    </View>
-  );
-};
+// Ejemplo usando Input de gluestack
+import {
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Input,
+  InputField,
+} from '@gluestack-ui/themed';
+
+<FormControl isInvalid={!!error}>
+  <FormControlLabel>
+    <FormControlLabelText>Email</FormControlLabelText>
+  </FormControlLabel>
+  <Input>
+    <InputField
+      value={email}
+      onChangeText={setEmail}
+      accessibilityLabel="Email"
+      accessibilityState={{ invalid: !!error }}
+    />
+  </Input>
+  {error && (
+    <FormControlError>
+      <FormControlErrorText accessibilityRole="alert" accessibilityLiveRegion="polite">
+        {error}
+      </FormControlErrorText>
+    </FormControlError>
+  )}
+</FormControl>
 ```
 
 ### Navegación por Teclado
@@ -4958,74 +4962,110 @@ export function useLocaleLanguage(): void {
 
 ### Uso en Componentes
 
-**Con macros de Lingui**:
+**1. `t` para strings simples (más común y recomendado)**:
+
+Usa `t` directamente para strings simples que se pasan como props o valores. No requiere `useLingui`:
 
 ```typescript
-import { msg } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
+import { t } from '@lingui/macro';
 
-export const MyComponent: React.FC = () => {
-  const { _ } = useLingui();
-
-  return (
-    <Text>{_(msg`Hello world`)}</Text>
-  );
-}
-```
-
-**Ejemplo más completo**:
-
-```typescript
-// modules/tasks/components/TaskCard.tsx
-import { Trans, t, msg } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
-
-export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
-  const { _ } = useLingui();
-
+export const LoginForm: React.FC = () => {
   return (
     <View>
-      <Text>{task.title}</Text>
-      <Text>{_(msg`Completada el ${task.completedAt}`)}</Text>
-      <Button title={_(msg`Completar`)} />
+      <Input label={t`Email`} />
+      <Input label={t`Password`} />
+      <Button title={t`Sign In`} />
     </View>
   );
 };
 ```
 
-**Con Trans para textos complejos**:
+**2. `<Trans>` para contenido JSX**:
+
+Usa `<Trans>` cuando el texto contiene elementos JSX anidados o cuando quieres mantener el formato:
 
 ```typescript
-import { Trans } from '@lingui/react';
+import { Trans } from '@lingui/macro';
 
-<Trans>
-  Tarea <Text style={styles.bold}>{task.title}</Text> completada
-</Trans>
+export const LoginScreen: React.FC = () => {
+  return (
+    <View>
+      <Text>
+        <Trans>Welcome Back</Trans>
+      </Text>
+      <Text>
+        <Trans>Sign in to continue</Trans>
+      </Text>
+      <Text>
+        <Trans>
+          Tarea <Text style={styles.bold}>{task.title}</Text> completada
+        </Trans>
+      </Text>
+    </View>
+  );
+};
 ```
 
-**Con variables**:
+**3. `msg` con `useLingui` solo cuando necesitas pasar como variable**:
+
+Usa `msg` con `useLingui` cuando necesitas obtener el mensaje traducido como string para pasarlo como prop o variable:
+
+```typescript
+import { msg } from '@lingui/macro';
+import { useLingui } from '@lingui/react';
+
+export const ErrorBoundary: React.FC = () => {
+  const { _ } = useLingui();
+
+  return (
+    <ErrorScreen
+      title={_(msg`Oh no!`)}
+      message={_(msg`There was an unexpected issue in the application.`)}
+    />
+  );
+};
+```
+
+**Con variables en `t`**:
 
 ```typescript
 import { t } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
 
-const { _ } = useLingui();
-const message = _(msg`Tienes ${count} tareas pendientes`, { count });
+// t puede incluir variables directamente
+const message = t`You have ${count} pending tasks`;
 ```
 
 ### Uso en Hooks y Utilidades
 
+**En hooks, usa `t` directamente cuando sea posible**:
+
 ```typescript
 // modules/tasks/hooks/useTasksList.ts
 import { t } from '@lingui/macro';
-import { useLingui } from '@lingui/react';
 
 export const useTasksList = () => {
-  const { _ } = useLingui();
-
-  const errorMessage = _(msg`No se pudieron cargar las tareas`);
+  const errorMessage = t`No se pudieron cargar las tareas`;
 
   // ...
+};
+```
+
+**Solo usa `msg` con `useLingui` cuando necesites el string traducido explícitamente**:
+
+```typescript
+// shared/hooks/useTimeAgo.ts
+import { msg } from '@lingui/macro';
+import { useLingui } from '@lingui/react';
+
+export const useGetTimeAgo = () => {
+  const { i18n } = useLingui();
+
+  return useCallback(
+    (date: Date) => {
+      return i18n._(msg`now`);
+    },
+    [i18n],
+  );
 };
 ```
 
@@ -5147,7 +5187,7 @@ export const PreferencesScreen: React.FC = () => {
 npm run i18n:extract
 ```
 
-Este comando busca todos los mensajes marcados con `msg` en el código y los agrega a los archivos `.po`.
+Este comando busca todos los mensajes marcados con `t`, `<Trans>`, y `msg` en el código y los agrega a los archivos `.po`.
 
 **Compilar mensajes**:
 
@@ -5162,6 +5202,17 @@ Este comando compila los archivos `.po` a `.js` para que puedan ser importados e
 ### Convenciones
 
 - **NO hardcodear strings**: Todos los textos visibles al usuario deben usar i18n
-- **Usar macros**: Usar `msg`, `t`, `Trans` de `@lingui/macro`
+- **Preferir `t` para strings simples**: Usa `t\`Texto\``directamente, es más simple y no requiere`useLingui`
+- **Usar `<Trans>` para JSX**: Cuando el texto contiene elementos JSX anidados o necesita mantener formato
+- **Usar `msg` solo cuando sea necesario**: Solo cuando necesites obtener el string traducido explícitamente como variable
+- **Macros disponibles**: `t`, `<Trans>`, `msg` de `@lingui/macro`
 - **Pluralización**: Usar pluralización de Lingui cuando sea necesario
 - **Formateo de fechas/números**: Usar helpers de `@locale/helpers` o `Intl` APIs
+
+**Resumen de cuándo usar cada macro**:
+
+| Macro     | Cuándo usar                                        | Ejemplo                                    |
+| --------- | -------------------------------------------------- | ------------------------------------------ |
+| `t`       | Strings simples como props o valores               | `label={t\`Email\``}                       |
+| `<Trans>` | Contenido JSX con elementos anidados               | `<Trans>Welcome <Text>Back</Text></Trans>` |
+| `msg`     | Cuando necesitas el string traducido como variable | `const title = _(msg\`Title\`)`            |

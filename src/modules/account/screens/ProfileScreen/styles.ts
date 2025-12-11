@@ -1,19 +1,38 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
+  avatarContainer: {
     alignItems: 'center',
-    flex: 1,
+    backgroundColor: '#aaa',
+    borderRadius: 50,
+    height: 100,
     justifyContent: 'center',
-    padding: 20,
+    marginBottom: 16,
+    width: 100,
   },
-  subtitle: {
-    color: '#666',
-    fontSize: 16,
+  container: {
+    flex: 1,
   },
-  title: {
+  header: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 20,
+    paddingHorizontal: 16,
+    paddingTop: 60,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  menuSection: {
+    paddingHorizontal: 0,
+  },
+  profileSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 32,
+  },
+  userName: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontWeight: '600',
   },
 });

@@ -15,7 +15,7 @@ export async function dynamicActivate(locale: AppLanguage): Promise<void> {
       break;
     }
     default: {
-      i18n.loadAndActivate({ locale: 'es', messages: messagesEs });
+      i18n.loadAndActivate({ locale: 'en', messages: messagesEn });
     }
   }
 }

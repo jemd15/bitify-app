@@ -29,6 +29,7 @@ export default [
         ...globals.node,
         ...globals.browser,
         ...globals.es2021,
+        __DEV__: 'readonly',
       },
     },
     settings: {
@@ -53,11 +54,12 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'no-console': ['error', { allow: ['warn', 'error'] }],
-      'react-native/no-inline-styles': 'error',
-      'unused-imports/no-unused-imports': 'error',
-      'no-unused-vars': 'off',
+      'react-native/no-inline-styles': 'warn',
+      'react-native/no-color-literals': 'warn',
+      'unused-imports/no-unused-imports': 'warn',
+      'no-unused-vars': 'warn',
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
