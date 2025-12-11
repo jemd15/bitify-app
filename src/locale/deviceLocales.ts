@@ -3,12 +3,12 @@ import * as Localization from 'expo-localization';
 import { AppLanguage } from './languages';
 
 export function getDeviceLocales(): string[] {
-  return Localization.getLocales().map(locale => locale.languageCode || 'es');
+  return Localization.getLocales().map(locale => locale.languageCode || 'en');
 }
 
 export function getDeviceLanguage(): AppLanguage {
   const locales = getDeviceLocales();
-  const firstLocale = locales[0] || 'es';
+  const firstLocale = locales[0] || 'en';
 
   if (firstLocale.startsWith('es')) {
     return AppLanguage.ES;
@@ -17,5 +17,5 @@ export function getDeviceLanguage(): AppLanguage {
     return AppLanguage.EN;
   }
 
-  return AppLanguage.ES;
+  return AppLanguage.EN;
 }

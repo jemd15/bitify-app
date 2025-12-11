@@ -116,7 +116,7 @@ msgstr "Already have an account?"
 msgid "Authentication"
 msgstr "Authentication"
 
-#: src/modules/auth/components/CreateAccountForm/constants.ts:14
+#: src/modules/auth/components/CreateAccountForm/constants.ts:18
 msgid "Confirm Password"
 msgstr "Confirm Password"
 
@@ -124,7 +124,7 @@ msgstr "Confirm Password"
 #~ msgid "Continue with Google"
 #~ msgstr "Continue with Google"
 
-#: src/modules/auth/components/CreateAccountForm/constants.ts:15
+#: src/modules/auth/components/CreateAccountForm/constants.ts:19
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:4
 #: src/modules/auth/screens/LoginScreen/constants.ts:8
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:6
@@ -148,8 +148,8 @@ msgstr "Dismiss"
 msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
-#: src/modules/auth/components/CreateAccountForm/constants.ts:12
-#: src/modules/auth/components/LoginForm/constants.ts:10
+#: src/modules/auth/components/CreateAccountForm/constants.ts:16
+#: src/modules/auth/components/LoginForm/constants.ts:14
 msgid "Email"
 msgstr "Email"
 
@@ -158,7 +158,7 @@ msgstr "Email"
 msgid "Email is required"
 msgstr "Email is required"
 
-#: src/modules/auth/components/LoginForm/constants.ts:13
+#: src/modules/auth/components/LoginForm/constants.ts:17
 msgid "Forgot Password?"
 msgstr "Forgot Password?"
 
@@ -171,7 +171,7 @@ msgstr "Invalid email format"
 msgid "Investments"
 msgstr "Investments"
 
-#: src/modules/auth/components/LoginForm/constants.ts:12
+#: src/modules/auth/components/LoginForm/constants.ts:16
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:8
 #: src/modules/auth/screens/WelcomeScreen/constants.ts:8
 msgid "Login"
@@ -210,8 +210,8 @@ msgstr "Oh no!"
 msgid "or"
 msgstr "or"
 
-#: src/modules/auth/components/CreateAccountForm/constants.ts:13
-#: src/modules/auth/components/LoginForm/constants.ts:11
+#: src/modules/auth/components/CreateAccountForm/constants.ts:17
+#: src/modules/auth/components/LoginForm/constants.ts:15
 msgid "Password"
 msgstr "Password"
 
@@ -225,11 +225,31 @@ msgstr "Password is required"
 msgid "Password must be at least 6 characters"
 msgstr "Password must be at least 6 characters"
 
+#: src/modules/auth/components/CreateAccountForm/constants.ts:10
+#: src/modules/auth/components/LoginForm/constants.ts:10
+msgid "Password must contain at least one digit"
+msgstr ""
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:8
+#: src/modules/auth/components/LoginForm/constants.ts:8
+msgid "Password must contain at least one lowercase letter"
+msgstr ""
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:11
+#: src/modules/auth/components/LoginForm/constants.ts:11
+msgid "Password must contain at least one special character"
+msgstr ""
+
 #: src/modules/auth/components/CreateAccountForm/constants.ts:9
+#: src/modules/auth/components/LoginForm/constants.ts:9
+msgid "Password must contain at least one uppercase letter"
+msgstr ""
+
+#: src/modules/auth/components/CreateAccountForm/constants.ts:13
 msgid "Passwords do not match"
 msgstr "Passwords do not match"
 
-#: src/modules/auth/components/CreateAccountForm/constants.ts:8
+#: src/modules/auth/components/CreateAccountForm/constants.ts:12
 msgid "Please confirm your password"
 msgstr "Please confirm your password"
 
