@@ -7,10 +7,16 @@ export const signupSchema = z
       .string()
       .min(1, 'PASSWORD_REQUIRED')
       .min(6, 'PASSWORD_TOO_SHORT')
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
-        'PASSWORD_WEAK',
-      ),
+      .refine(password => /[a-z]/.test(password), {
+        message: 'PASSWORD_MISSING_LOWERCASE',
+      })
+      .refine(password => /[A-Z]/.test(password), {
+        message: 'PASSWORD_MISSING_UPPERCASE',
+      })
+      .refine(password => /\d/.test(password), { message: 'PASSWORD_MISSING_DIGIT' })
+      .refine(password => /[@$!%*?&=]/.test(password), {
+        message: 'PASSWORD_MISSING_SPECIAL_CHAR',
+      }),
     confirmPassword: z.string().min(1, 'CONFIRM_PASSWORD_REQUIRED'),
   })
   .refine(data => data.password === data.confirmPassword, {

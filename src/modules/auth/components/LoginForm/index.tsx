@@ -78,11 +78,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             accessibilityState={{ disabled: isPending }}
           />
         </Input>
-        {errors.email && (
-          <FormControlError>
-            <FormControlErrorText>{errors.email}</FormControlErrorText>
-          </FormControlError>
-        )}
+        <View style={styles.errorContainer}>
+          {errors.email && (
+            <FormControlError>
+              <FormControlErrorText>{errors.email}</FormControlErrorText>
+            </FormControlError>
+          )}
+        </View>
       </FormControl>
       <FormControl isInvalid={!!errors.password} marginBottom="$4">
         <FormControlLabel>
@@ -105,11 +107,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             />
           </InputSlot>
         </Input>
-        {errors.password && (
-          <FormControlError>
-            <FormControlErrorText>{errors.password}</FormControlErrorText>
-          </FormControlError>
-        )}
+        <View style={styles.errorContainer}>
+          {errors.password && (
+            <FormControlError>
+              <FormControlErrorText>{errors.password}</FormControlErrorText>
+            </FormControlError>
+          )}
+        </View>
       </FormControl>
       <Button
         variant="solid"

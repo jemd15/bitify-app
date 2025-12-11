@@ -20,6 +20,7 @@ import type { SignUpInput } from '@modules/auth/domain/validators/signup.validat
 
 import { CreateAccountFormProps } from './types';
 import { errorMessages, CREATE_ACCOUNT_FORM_LABELS } from './constants';
+import { styles } from './styles';
 
 export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState('');
@@ -83,11 +84,13 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
             accessibilityState={{ disabled: !!errors.email }}
           />
         </Input>
-        {errors.email && (
-          <FormControlError>
-            <FormControlErrorText>{errors.email}</FormControlErrorText>
-          </FormControlError>
-        )}
+        <View style={styles.errorContainer}>
+          {errors.email && (
+            <FormControlError>
+              <FormControlErrorText>{errors.email}</FormControlErrorText>
+            </FormControlError>
+          )}
+        </View>
       </FormControl>
       <FormControl isInvalid={!!errors.password} marginBottom="$4">
         <FormControlLabel>
@@ -112,11 +115,13 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
             />
           </InputSlot>
         </Input>
-        {errors.password && (
-          <FormControlError>
-            <FormControlErrorText>{errors.password}</FormControlErrorText>
-          </FormControlError>
-        )}
+        <View style={styles.errorContainer}>
+          {errors.password && (
+            <FormControlError>
+              <FormControlErrorText>{errors.password}</FormControlErrorText>
+            </FormControlError>
+          )}
+        </View>
       </FormControl>
       <FormControl isInvalid={!!errors.confirmPassword} marginBottom="$4">
         <FormControlLabel>
@@ -141,11 +146,13 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({ onSuccess 
             />
           </InputSlot>
         </Input>
-        {errors.confirmPassword && (
-          <FormControlError>
-            <FormControlErrorText>{errors.confirmPassword}</FormControlErrorText>
-          </FormControlError>
-        )}
+        <View style={styles.errorContainer}>
+          {errors.confirmPassword && (
+            <FormControlError>
+              <FormControlErrorText>{errors.confirmPassword}</FormControlErrorText>
+            </FormControlError>
+          )}
+        </View>
       </FormControl>
       <Button
         variant="solid"
