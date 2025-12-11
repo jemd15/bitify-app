@@ -120,9 +120,9 @@ msgstr "Autenticación"
 msgid "Confirm Password"
 msgstr "Confirmar contraseña"
 
-#: src/modules/auth/components/GoogleLoginButton/index.tsx:20
-#~ msgid "Continue with Google"
-#~ msgstr "Continuar con Google"
+#: src/modules/auth/components/GoogleLoginButton/constants.ts:4
+msgid "Continue with Google"
+msgstr "Continuar con Google"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:19
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:4
@@ -182,8 +182,8 @@ msgid "Login to your account to continue"
 msgstr "Inicia sesión en tu cuenta para continuar"
 
 #: src/modules/auth/components/GoogleLoginButton/constants.ts:4
-msgid "Login with Google"
-msgstr "Iniciar sesión con Google"
+#~ msgid "Login with Google"
+#~ msgstr "Iniciar sesión con Google"
 
 #: src/modules/account/constants/account.constants.ts:12
 msgid "Logout"
@@ -218,7 +218,7 @@ msgstr "Contraseña"
 #: src/modules/auth/components/CreateAccountForm/constants.ts:6
 #: src/modules/auth/components/LoginForm/constants.ts:6
 msgid "Password is required"
-msgstr "Contraseña es requerida"
+msgstr "La contraseña es requerida"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:7
 #: src/modules/auth/components/LoginForm/constants.ts:7

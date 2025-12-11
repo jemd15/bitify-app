@@ -120,9 +120,9 @@ msgstr "Authentication"
 msgid "Confirm Password"
 msgstr "Confirm Password"
 
-#: src/modules/auth/components/GoogleLoginButton/index.tsx:20
-#~ msgid "Continue with Google"
-#~ msgstr "Continue with Google"
+#: src/modules/auth/components/GoogleLoginButton/constants.ts:4
+msgid "Continue with Google"
+msgstr "Continue with Google"
 
 #: src/modules/auth/components/CreateAccountForm/constants.ts:19
 #: src/modules/auth/screens/CreateAccountScreen/constants.ts:4
@@ -182,8 +182,8 @@ msgid "Login to your account to continue"
 msgstr "Login to your account to continue"
 
 #: src/modules/auth/components/GoogleLoginButton/constants.ts:4
-msgid "Login with Google"
-msgstr "Login with Google"
+#~ msgid "Login with Google"
+#~ msgstr "Login with Google"
 
 #: src/modules/account/constants/account.constants.ts:12
 msgid "Logout"

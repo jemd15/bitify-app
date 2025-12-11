@@ -5,6 +5,10 @@ export const AUTH_CONSTANTS = {
   LOGIN_BUTTON: 'Login',
   GOOGLE_LOGIN_BUTTON: 'Login with Google',
   FORGOT_PASSWORD: 'Forgot Password?',
+  REDIRECT_PATH: '(tabs)/home',
+} as const;
+export const AUTH_PROVIDERS = {
+  GOOGLE: 'google',
 } as const;
 
 export const RQKEY_ROOT = 'auth';

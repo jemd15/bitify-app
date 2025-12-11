@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import * as Crypto from 'expo-crypto';
+import * as Linking from 'expo-linking';
 import { supabase } from '@lib/supabase';
 import { transformSupabaseAuthError } from '@shared/utils/errorTransformers';
 import { ERROR_CODES } from '@shared/constants/errors.constants';
 import { DomainError } from '@shared/errors/DomainError';
 
 import {
-  GOOGLE_AUTHORIZATION_ENDPOINT,
+  AUTH_CONSTANTS,
+  AUTH_PROVIDERS,
   RQKEY_SESSION,
 } from '../constants/auth.constants';
 
@@ -19,57 +20,112 @@ export const useGoogleLogin = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const codeVerifier = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        Math.random().toString(),
-      );
-      const codeChallenge = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        codeVerifier,
-      );
-      const redirectUrl = AuthSession.makeRedirectUri();
-      const request = new AuthSession.AuthRequest({
-        responseType: AuthSession.ResponseType.Code,
-        clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-        redirectUri: redirectUrl,
-        scopes: ['openid', 'profile', 'email'],
-        codeChallenge,
-        codeChallengeMethod: AuthSession.CodeChallengeMethod.S256,
+      const redirectUrl = AuthSession.makeRedirectUri({
+        scheme: 'bitify',
+        path: AUTH_CONSTANTS.REDIRECT_PATH,
       });
-      const result = await request.promptAsync({
-        authorizationEndpoint: GOOGLE_AUTHORIZATION_ENDPOINT,
-      });
-
-      if (result.type !== 'success' || !result.params.code) {
-        throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
-      }
-
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+      const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: AUTH_PROVIDERS.GOOGLE,
         options: {
           redirectTo: redirectUrl,
-          queryParams: {
-            code: result.params.code,
-            code_verifier: codeVerifier,
-          },
+          skipBrowserRedirect: true,
         },
       });
 
-      if (error) {
-        throw transformSupabaseAuthError(error);
+      if (oauthError) {
+        throw transformSupabaseAuthError(oauthError);
       }
 
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-
-      if (sessionError) {
-        throw transformSupabaseAuthError(sessionError);
+      if (!data?.url) {
+        throw transformSupabaseAuthError(
+          new Error('Failed to get OAuth URL from Supabase'),
+        );
       }
 
-      if (!sessionData.session) {
+      const oauthUrlToOpen = data.url;
+      const result = await WebBrowser.openAuthSessionAsync(oauthUrlToOpen, redirectUrl);
+
+      if (result.type !== 'success' || !('url' in result) || !result.url) {
         throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
       }
 
-      return sessionData.session;
+      const hasFragment = result.url.includes('#');
+      const hasAccessToken = result.url.includes('#access_token=');
+      const hasCode = result.url.includes('code=');
+
+      if (hasFragment && hasAccessToken) {
+        const fragment = result.url.split('#')[1];
+        const fragmentParams = new URLSearchParams(fragment);
+        const accessToken = fragmentParams.get('access_token');
+        const refreshToken = fragmentParams.get('refresh_token');
+
+        if (!accessToken) {
+          throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
+        }
+
+        const { data: sessionData, error: sessionError } = await supabase.auth.setSession(
+          {
+            access_token: accessToken,
+            refresh_token: refreshToken || '',
+          },
+        );
+
+        if (sessionError) {
+          throw transformSupabaseAuthError(sessionError);
+        }
+
+        if (!sessionData?.session) {
+          throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
+        }
+
+        return sessionData.session;
+      } else if (hasCode) {
+        let authCode: string | null = null;
+
+        try {
+          const parsedUrl = Linking.parse(result.url);
+          const { code, error: urlError } = parsedUrl.queryParams || {};
+
+          if (urlError) {
+            throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
+          }
+
+          if (code && typeof code === 'string') {
+            authCode = code;
+          } else {
+            const codeMatch = result.url.match(/[?&]code=([^&]+)/);
+
+            if (codeMatch && codeMatch[1]) {
+              authCode = decodeURIComponent(codeMatch[1]);
+            }
+          }
+        } catch (error) {
+          const codeMatch = result.url.match(/[?&]code=([^&]+)/);
+
+          if (codeMatch && codeMatch[1]) {
+            authCode = decodeURIComponent(codeMatch[1]);
+          }
+        }
+
+        if (!authCode) {
+          throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
+        }
+
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.exchangeCodeForSession(authCode);
+
+        if (sessionError) {
+          throw transformSupabaseAuthError(sessionError);
+        }
+
+        if (!sessionData?.session) {
+          throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
+        }
+
+        return sessionData.session;
+      } else {
+        throw new DomainError(ERROR_CODES.AUTH.GOOGLE_LOGIN_FAILED);
+      }
     },
     onSuccess: session => {
       queryClient.setQueryData(RQKEY_SESSION, session);
