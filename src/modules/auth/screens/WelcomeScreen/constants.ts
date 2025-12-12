@@ -9,4 +9,3 @@ const WELCOME_LABELS = {
 } as const;
 
 export default WELCOME_LABELS;
-
