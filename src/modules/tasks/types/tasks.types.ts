@@ -27,6 +27,8 @@ export interface Task {
   validatedAt: Date | null;
   validatedBy: string | null;
   validationDescription: string | null;
+  notificationEnabled: boolean;
+  notificationMinutesBefore: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +49,8 @@ export interface CreateTaskParams {
   isRecurring?: boolean;
   recurrenceType?: RecurrenceType;
   recurrenceDate?: Date | null;
+  notificationEnabled?: boolean;
+  notificationMinutesBefore?: number | null;
 }
 
 export interface UpdateTaskParams {
@@ -67,6 +71,8 @@ export interface UpdateTaskParams {
   status?: TaskStatus;
   completedAt?: Date | null;
   completedBy?: string | null;
+  notificationEnabled?: boolean;
+  notificationMinutesBefore?: number | null;
 }
 
 export interface TaskValidation {

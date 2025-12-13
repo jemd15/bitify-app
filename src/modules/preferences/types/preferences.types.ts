@@ -8,6 +8,10 @@ export interface UserPreferences {
   theme: Theme;
   language: AppLanguage;
   notificationsEnabled: boolean;
+  notificationsTaskReminderEnabled: boolean;
+  notificationsTaskValidationEnabled: boolean;
+  notificationsMemberJoinedEnabled: boolean;
+  notificationsMemberLeftEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,10 +21,18 @@ export interface CreateUserPreferencesParams {
   theme?: Theme;
   language?: AppLanguage;
   notificationsEnabled?: boolean;
+  notificationsTaskReminderEnabled?: boolean;
+  notificationsTaskValidationEnabled?: boolean;
+  notificationsMemberJoinedEnabled?: boolean;
+  notificationsMemberLeftEnabled?: boolean;
 }
 
 export interface UpdateUserPreferencesParams {
   theme?: Theme;
   language?: AppLanguage;
   notificationsEnabled?: boolean;
+  notificationsTaskReminderEnabled?: boolean;
+  notificationsTaskValidationEnabled?: boolean;
+  notificationsMemberJoinedEnabled?: boolean;
+  notificationsMemberLeftEnabled?: boolean;
 }

@@ -46,3 +46,33 @@ export interface CreatePointHistoryParams {
   expiresAt?: Date | null;
   description?: string;
 }
+
+export type NotificationType =
+  | 'task_reminder'
+  | 'task_validation'
+  | 'member_joined'
+  | 'member_left';
+
+export interface Notification {
+  id: string;
+  userId: string;
+  taskId: string | null;
+  houseId: string | null;
+  notificationType: NotificationType;
+  scheduledFor: Date;
+  sentAt: Date | null;
+  createdAt: Date;
+}
+
+export interface CreateNotificationParams {
+  userId: string;
+  taskId?: string | null;
+  houseId?: string | null;
+  notificationType: NotificationType;
+  scheduledFor: Date;
+  sentAt?: Date | null;
+}
+
+export interface UpdateNotificationParams {
+  sentAt?: Date | null;
+}
