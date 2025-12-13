@@ -6,29 +6,30 @@ Este documento describe en detalle el esquema de base de datos de Bitify, implem
 
 ## Estructura General
 
-La base de datos está organizada en **13 tablas principales** que se relacionan entre sí para formar un sistema completo de gestión de tareas del hogar:
+La base de datos está organizada en **14 tablas principales** que se relacionan entre sí para formar un sistema completo de gestión de tareas del hogar:
 
-1. **Usuarios y Perfiles**: `profiles`, `user_preferences`, `user_limits`
+1. **Usuarios y Perfiles**: `users`, `user_preferences`, `user_limits`
 2. **Casas y Organización**: `houses`, `house_occupants`, `rooms`
 3. **Tareas**: `tasks`, `task_validations`
 4. **Sistema de Puntos**: `user_house_points`, `point_history`
 5. **Premios**: `house_rewards`, `reward_redemptions`
 6. **Invitaciones**: `house_invitations`
+7. **Notificaciones**: `notifications`
 
 ## Diagrama de Relaciones
 
 ```mermaid
 erDiagram
-    profiles ||--o{ user_preferences : has
-    profiles ||--o{ houses : owns
-    profiles ||--o{ house_occupants : "is occupant"
-    profiles ||--o{ tasks : "assigned to"
-    profiles ||--o{ tasks : "validates"
-    profiles ||--o{ user_house_points : "has points"
-    profiles ||--o{ point_history : "earns points"
-    profiles ||--o{ reward_redemptions : "redeems"
-    profiles ||--o{ house_invitations : "invites"
-    profiles ||--o{ house_invitations : "invited"
+    users ||--o{ user_preferences : has
+    users ||--o{ houses : owns
+    users ||--o{ house_occupants : "is occupant"
+    users ||--o{ tasks : "assigned to"
+    users ||--o{ tasks : "validates"
+    users ||--o{ user_house_points : "has points"
+    users ||--o{ point_history : "earns points"
+    users ||--o{ reward_redemptions : "redeems"
+    users ||--o{ house_invitations : "invites"
+    users ||--o{ house_invitations : "invited"
 
     houses ||--o{ house_occupants : has
     houses ||--o{ rooms : contains
@@ -44,20 +45,25 @@ erDiagram
     tasks ||--o{ task_validations : "has validation"
     tasks ||--o{ point_history : "generates points"
     tasks ||--o| tasks : "parent task (recurring)"
+    tasks ||--o{ notifications : "has notifications"
+
+    houses ||--o{ notifications : "has notifications"
+
+    users ||--o{ notifications : "receives"
 
     house_rewards ||--o{ reward_redemptions : "redeemed as"
 
-    user_limits ||--o{ profiles : "defines limits for"
+    user_limits ||--o{ users : "defines limits for"
 ```
 
 ## Tablas Principales
 
-### 1. Profiles (Perfiles de Usuario)
+### 1. Users (Usuarios)
 
 **¿Qué es?**
-La tabla `profiles` extiende la información de autenticación de Supabase (`auth.users`) con datos adicionales del perfil del usuario.
+La tabla `users` extiende la información de autenticación de Supabase (`auth.users`) con datos adicionales del perfil del usuario.
 
-**Ubicación en la BD**: `public.profiles`
+**Ubicación en la BD**: `users`
 
 **Campos**:
 
@@ -73,24 +79,24 @@ La tabla `profiles` extiende la información de autenticación de Supabase (`aut
 
 **Relaciones**:
 
-- Un perfil puede ser dueño de múltiples casas (`houses.owner_id`)
-- Un perfil puede ser ocupante de múltiples casas (`house_occupants.user_id`)
-- Un perfil tiene preferencias (`user_preferences.user_id`)
-- Un perfil tiene puntos por cada casa (`user_house_points.user_id`)
+- Un usuario puede ser dueño de múltiples casas (`houses.owner_id`)
+- Un usuario puede ser ocupante de múltiples casas (`house_occupants.user_id`)
+- Un usuario tiene preferencias (`user_preferences.user_id`)
+- Un usuario tiene puntos por cada casa (`user_house_points.user_id`)
 
 **Reglas de Negocio**:
 
-- El perfil se crea automáticamente cuando se registra un usuario (trigger `handle_new_user`)
+- El usuario se crea automáticamente cuando se registra en `auth.users` (trigger `handle_new_user`)
 - El tipo de usuario (`user_type`) determina los límites que puede tener (ver `user_limits`)
 
 **Ejemplo de Uso**:
 
 ```sql
--- Obtener perfil de usuario
-SELECT * FROM profiles WHERE id = 'user-uuid';
+-- Obtener usuario
+SELECT * FROM users WHERE id = 'user-uuid';
 
 -- Actualizar nombre de usuario
-UPDATE profiles
+UPDATE users
 SET full_name = 'Juan Pérez', updated_at = NOW()
 WHERE id = 'user-uuid';
 ```
@@ -114,29 +120,39 @@ import type {
 **¿Qué es?**
 Almacena las preferencias de configuración de cada usuario (tema, idioma, notificaciones). Estas preferencias se sincronizan entre la base de datos y el storage local del dispositivo.
 
-**Ubicación en la BD**: `public.user_preferences`
+**Ubicación en la BD**: `user_preferences`
 
 **Campos**:
 
-| Campo                   | Tipo        | Descripción                             |
-| ----------------------- | ----------- | --------------------------------------- |
-| `id`                    | UUID        | ID único de la preferencia              |
-| `user_id`               | UUID        | ID del usuario (FK a `profiles.id`)     |
-| `theme`                 | TEXT        | Tema: `'light'`, `'dark'` o `'auto'`    |
-| `language`              | TEXT        | Idioma: `'es'` o `'en'`                 |
-| `notifications_enabled` | BOOLEAN     | Si las notificaciones están habilitadas |
-| `created_at`            | TIMESTAMPTZ | Fecha de creación                       |
-| `updated_at`            | TIMESTAMPTZ | Fecha de última actualización           |
+| Campo                                   | Tipo        | Descripción                                                       |
+| --------------------------------------- | ----------- | ----------------------------------------------------------------- |
+| `id`                                    | UUID        | ID único de la preferencia                                        |
+| `user_id`                               | UUID        | ID del usuario (FK a `users.id`)                                  |
+| `theme`                                 | TEXT        | Tema: `'light'`, `'dark'` o `'auto'`                              |
+| `language`                              | TEXT        | Idioma: `'es'` o `'en'`                                           |
+| `notifications_enabled`                 | BOOLEAN     | Si todas las notificaciones están habilitadas (global)            |
+| `notifications_task_reminder_enabled`   | BOOLEAN     | Si las notificaciones de recordatorio de tareas están habilitadas |
+| `notifications_task_validation_enabled` | BOOLEAN     | Si las notificaciones de validación de tareas están habilitadas   |
+| `notifications_member_joined_enabled`   | BOOLEAN     | Si las notificaciones de nuevo miembro están habilitadas          |
+| `notifications_member_left_enabled`     | BOOLEAN     | Si las notificaciones de miembro que se va están habilitadas      |
+| `created_at`                            | TIMESTAMPTZ | Fecha de creación                                                 |
+| `updated_at`                            | TIMESTAMPTZ | Fecha de última actualización                                     |
 
 **Relaciones**:
 
-- Una preferencia pertenece a un usuario (`profiles.id`)
+- Una preferencia pertenece a un usuario (`users.id`)
 
 **Reglas de Negocio**:
 
 - Se crea automáticamente cuando se registra un usuario (trigger `handle_new_user`)
 - Solo puede haber una preferencia por usuario (constraint `UNIQUE(user_id)`)
 - Los valores por defecto son: `theme = 'auto'`, `language = 'es'`, `notifications_enabled = true`
+- Todos los tipos de notificaciones específicos están habilitados por defecto (`true`)
+- **Lógica de notificaciones**: Una notificación se envía solo si:
+  1. `notifications_enabled = true` (habilitación global)
+  2. El tipo específico de notificación está habilitado (ej: `notifications_task_reminder_enabled = true`)
+  3. Para tareas: la tarea tiene `notification_enabled = true`
+- Si se desactiva un tipo de notificación en preferencias, no se envían esas notificaciones, pero la configuración de la tarea se mantiene (para reactivarlas en el futuro)
 
 **Sincronización con Storage Local**:
 Las preferencias se cargan desde la base de datos al iniciar sesión y se sincronizan con el storage local del dispositivo. Si hay cambios en la BD, estos sobrescriben el storage local.
@@ -173,7 +189,7 @@ import type {
 **¿Qué es?**
 Define los límites que tienen los usuarios según su tipo (FREE vs PRO). Esta tabla es de solo lectura desde la aplicación y se usa para validar operaciones.
 
-**Ubicación en la BD**: `public.user_limits`
+**Ubicación en la BD**: `user_limits`
 
 **Campos**:
 
@@ -215,7 +231,7 @@ SELECT
   COUNT(*) as current_houses,
   ul.max_houses
 FROM houses h
-JOIN user_limits ul ON ul.user_type = (SELECT user_type FROM profiles WHERE id = h.owner_id)
+JOIN user_limits ul ON ul.user_type = (SELECT user_type FROM users WHERE id = h.owner_id)
 WHERE h.owner_id = 'user-uuid'
 GROUP BY ul.max_houses;
 ```
@@ -234,7 +250,7 @@ import type { UserLimits } from '@shared/types/database.types';
 **¿Qué es?**
 Representa una casa o hogar donde se gestionan tareas. Cada casa tiene un dueño, ocupantes, habitaciones, tareas y configuración de puntos.
 
-**Ubicación en la BD**: `public.houses`
+**Ubicación en la BD**: `houses`
 
 **Campos**:
 
@@ -243,7 +259,7 @@ Representa una casa o hogar donde se gestionan tareas. Cada casa tiene un dueño
 | `id`                            | UUID        | ID único de la casa                                                                |
 | `name`                          | TEXT        | Nombre de la casa                                                                  |
 | `description`                   | TEXT        | Descripción (nullable)                                                             |
-| `owner_id`                      | UUID        | ID del dueño (FK a `profiles.id`)                                                  |
+| `owner_id`                      | UUID        | ID del dueño (FK a `users.id`)                                                     |
 | `points_expiration_type`        | ENUM        | Tipo de expiración: `'none'`, `'weekly'`, `'monthly'`, `'yearly'`, `'custom_date'` |
 | `points_expiration_custom_date` | DATE        | Fecha personalizada (solo si `points_expiration_type = 'custom_date'`)             |
 | `created_at`                    | TIMESTAMPTZ | Fecha de creación                                                                  |
@@ -251,7 +267,7 @@ Representa una casa o hogar donde se gestionan tareas. Cada casa tiene un dueño
 
 **Relaciones**:
 
-- Una casa pertenece a un dueño (`profiles.id`)
+- Una casa pertenece a un dueño (`users.id`)
 - Una casa tiene múltiples ocupantes (`house_occupants.house_id`)
 - Una casa tiene múltiples habitaciones (`rooms.house_id`)
 - Una casa tiene múltiples tareas (`tasks.house_id`)
@@ -304,7 +320,7 @@ import type {
 **¿Qué es?**
 Relaciona usuarios con casas, definiendo el rol que tiene cada usuario en cada casa.
 
-**Ubicación en la BD**: `public.house_occupants`
+**Ubicación en la BD**: `house_occupants`
 
 **Campos**:
 
@@ -312,7 +328,7 @@ Relaciona usuarios con casas, definiendo el rol que tiene cada usuario en cada c
 | ------------ | ----------- | ----------------------------------------------------------- |
 | `id`         | UUID        | ID único                                                    |
 | `house_id`   | UUID        | ID de la casa (FK a `houses.id`)                            |
-| `user_id`    | UUID        | ID del usuario (FK a `profiles.id`)                         |
+| `user_id`    | UUID        | ID del usuario (FK a `users.id`)                            |
 | `role`       | ENUM        | Rol: `'owner'`, `'occupant_with_permissions'`, `'occupant'` |
 | `created_at` | TIMESTAMPTZ | Fecha de creación                                           |
 | `updated_at` | TIMESTAMPTZ | Fecha de última actualización                               |
@@ -326,7 +342,7 @@ Relaciona usuarios con casas, definiendo el rol que tiene cada usuario en cada c
 **Relaciones**:
 
 - Un ocupante pertenece a una casa (`houses.id`)
-- Un ocupante es un usuario (`profiles.id`)
+- Un ocupante es un usuario (`users.id`)
 
 **Reglas de Negocio**:
 
@@ -348,7 +364,7 @@ SELECT
   p.full_name,
   p.email
 FROM house_occupants ho
-JOIN profiles p ON p.id = ho.user_id
+JOIN users u ON u.id = ho.user_id
 WHERE ho.house_id = 'house-uuid';
 ```
 
@@ -371,7 +387,7 @@ import type {
 **¿Qué es?**
 Representa las habitaciones o espacios dentro de una casa. Las tareas pueden estar asignadas a una habitación específica o ser generales (sin habitación).
 
-**Ubicación en la BD**: `public.rooms`
+**Ubicación en la BD**: `rooms`
 
 **Campos**:
 
@@ -430,38 +446,40 @@ import type {
 **¿Qué es?**
 Representa una tarea del hogar que debe ser completada. Las tareas pueden ser recurrentes, tener validación, y otorgan puntos según cómo se completen.
 
-**Ubicación en la BD**: `public.tasks`
+**Ubicación en la BD**: `tasks`
 
 **Campos**:
 
-| Campo                    | Tipo        | Descripción                                                    |
-| ------------------------ | ----------- | -------------------------------------------------------------- |
-| `id`                     | UUID        | ID único de la tarea                                           |
-| `house_id`               | UUID        | ID de la casa (FK a `houses.id`)                               |
-| `room_id`                | UUID        | ID de la habitación (FK a `rooms.id`, nullable)                |
-| `title`                  | TEXT        | Título de la tarea                                             |
-| `description`            | TEXT        | Descripción (nullable)                                         |
-| `assigned_to`            | UUID        | ID del usuario asignado (FK a `profiles.id`)                   |
-| `validator_id`           | UUID        | ID del validador designado (FK a `profiles.id`, nullable)      |
-| `requires_validation`    | BOOLEAN     | Si requiere validación                                         |
-| `points_on_time`         | INTEGER     | Puntos por completar a tiempo                                  |
-| `points_extended`        | INTEGER     | Puntos por completar en plazo extendido                        |
-| `points_not_completed`   | INTEGER     | Puntos perdidos si no se completa                              |
-| `due_date`               | DATE        | Fecha límite para completar                                    |
-| `extended_due_date`      | DATE        | Fecha límite del plazo extendido (calculado)                   |
-| `extended_days`          | INTEGER     | Días de plazo extendido                                        |
-| `is_recurring`           | BOOLEAN     | Si es recurrente                                               |
-| `recurrence_type`        | ENUM        | Tipo: `'none'`, `'weekly'`, `'monthly'`, `'yearly'`            |
-| `recurrence_date`        | DATE        | Fecha específica para yearly (nullable)                        |
-| `status`                 | ENUM        | Estado: `'pending'`, `'completed'`, `'validated'`, `'expired'` |
-| `parent_task_id`         | UUID        | ID de la tarea padre (para recurrentes, FK a `tasks.id`)       |
-| `completed_at`           | TIMESTAMPTZ | Fecha de completado (nullable)                                 |
-| `completed_by`           | UUID        | ID de quien completó (FK a `profiles.id`, nullable)            |
-| `validated_at`           | TIMESTAMPTZ | Fecha de validación (nullable)                                 |
-| `validated_by`           | UUID        | ID de quien validó (FK a `profiles.id`, nullable)              |
-| `validation_description` | TEXT        | Descripción de la validación (nullable)                        |
-| `created_at`             | TIMESTAMPTZ | Fecha de creación                                              |
-| `updated_at`             | TIMESTAMPTZ | Fecha de última actualización                                  |
+| Campo                         | Tipo        | Descripción                                                             |
+| ----------------------------- | ----------- | ----------------------------------------------------------------------- |
+| `id`                          | UUID        | ID único de la tarea                                                    |
+| `house_id`                    | UUID        | ID de la casa (FK a `houses.id`)                                        |
+| `room_id`                     | UUID        | ID de la habitación (FK a `rooms.id`, nullable)                         |
+| `title`                       | TEXT        | Título de la tarea                                                      |
+| `description`                 | TEXT        | Descripción (nullable)                                                  |
+| `assigned_to`                 | UUID        | ID del usuario asignado (FK a `users.id`)                               |
+| `validator_id`                | UUID        | ID del validador designado (FK a `users.id`, nullable)                  |
+| `requires_validation`         | BOOLEAN     | Si requiere validación                                                  |
+| `points_on_time`              | INTEGER     | Puntos por completar a tiempo                                           |
+| `points_extended`             | INTEGER     | Puntos por completar en plazo extendido                                 |
+| `points_not_completed`        | INTEGER     | Puntos perdidos si no se completa                                       |
+| `due_date`                    | DATE        | Fecha límite para completar                                             |
+| `extended_due_date`           | DATE        | Fecha límite del plazo extendido (calculado)                            |
+| `extended_days`               | INTEGER     | Días de plazo extendido                                                 |
+| `is_recurring`                | BOOLEAN     | Si es recurrente                                                        |
+| `recurrence_type`             | ENUM        | Tipo: `'none'`, `'weekly'`, `'monthly'`, `'yearly'`                     |
+| `recurrence_date`             | DATE        | Fecha específica para yearly (nullable)                                 |
+| `status`                      | ENUM        | Estado: `'pending'`, `'completed'`, `'validated'`, `'expired'`          |
+| `parent_task_id`              | UUID        | ID de la tarea padre (para recurrentes, FK a `tasks.id`)                |
+| `completed_at`                | TIMESTAMPTZ | Fecha de completado (nullable)                                          |
+| `completed_by`                | UUID        | ID de quien completó (FK a `users.id`, nullable)                        |
+| `validated_at`                | TIMESTAMPTZ | Fecha de validación (nullable)                                          |
+| `validated_by`                | UUID        | ID de quien validó (FK a `users.id`, nullable)                          |
+| `validation_description`      | TEXT        | Descripción de la validación (nullable)                                 |
+| `notification_enabled`        | BOOLEAN     | Si la notificación de recordatorio está habilitada para esta tarea      |
+| `notification_minutes_before` | INTEGER     | Minutos antes de la fecha límite para enviar la notificación (nullable) |
+| `created_at`                  | TIMESTAMPTZ | Fecha de creación                                                       |
+| `updated_at`                  | TIMESTAMPTZ | Fecha de última actualización                                           |
 
 **Estados de Tarea**:
 
@@ -498,12 +516,24 @@ Los puntos se otorgan según cuándo se complete la tarea:
 - La nueva tarea se vincula con la anterior mediante `parent_task_id`
 - Esto permite mantener el historial de todas las instancias de la tarea
 
+**Sistema de Notificaciones**:
+
+- El usuario asignado (`assigned_to`) puede activar/desactivar notificaciones por tarea mediante `notification_enabled`
+- Si `notification_enabled = true`, se puede configurar `notification_minutes_before` (ej: 60 minutos antes de `due_date`)
+- La notificación se envía solo si:
+  1. `notification_enabled = true` en la tarea
+  2. El usuario tiene `notifications_enabled = true` en sus preferencias (global)
+  3. El usuario tiene `notifications_task_reminder_enabled = true` en sus preferencias
+- Si se desactiva el tipo de notificación en preferencias, la configuración de la tarea se mantiene (para reactivarla en el futuro)
+- Si una notificación se pierde (pasó el tiempo), no se envía retroactivamente
+
 **Reglas de Negocio**:
 
 - `points_extended` debe estar entre `points_not_completed` y `points_on_time`
 - Si `recurrence_type = 'yearly'`, `recurrence_date` es obligatorio
 - `extended_due_date` se calcula automáticamente: `due_date + extended_days` (trigger)
 - Al completar una tarea, se actualizan los puntos automáticamente (trigger `update_points_on_task_completion`)
+- `notification_minutes_before` debe ser positivo si está definido
 
 **Ejemplo de Uso**:
 
@@ -588,7 +618,7 @@ import type {
 **¿Qué es?**
 Registra quién y cuándo validó una tarea que requiere validación.
 
-**Ubicación en la BD**: `public.task_validations`
+**Ubicación en la BD**: `task_validations`
 
 **Campos**:
 
@@ -596,14 +626,14 @@ Registra quién y cuándo validó una tarea que requiere validación.
 | ------------------------ | ----------- | ---------------------------------------- |
 | `id`                     | UUID        | ID único                                 |
 | `task_id`                | UUID        | ID de la tarea (FK a `tasks.id`, UNIQUE) |
-| `validated_by`           | UUID        | ID de quien validó (FK a `profiles.id`)  |
+| `validated_by`           | UUID        | ID de quien validó (FK a `users.id`)     |
 | `validation_description` | TEXT        | Descripción opcional de la validación    |
 | `created_at`             | TIMESTAMPTZ | Fecha de validación                      |
 
 **Relaciones**:
 
 - Una validación pertenece a una tarea (`tasks.id`)
-- Una validación es realizada por un usuario (`profiles.id`)
+- Una validación es realizada por un usuario (`users.id`)
 
 **Reglas de Negocio**:
 
@@ -636,7 +666,7 @@ SELECT
   p.full_name as validator_name
 FROM task_validations tv
 JOIN tasks t ON t.id = tv.task_id
-JOIN profiles p ON p.id = tv.validated_by
+JOIN users u ON u.id = tv.validated_by
 WHERE t.house_id = 'house-uuid'
 ORDER BY tv.created_at DESC;
 ```
@@ -658,14 +688,14 @@ import type {
 **¿Qué es?**
 Almacena el total de puntos acumulados y disponibles de un usuario en una casa específica. Los puntos se acumulan por casa, no globalmente.
 
-**Ubicación en la BD**: `public.user_house_points`
+**Ubicación en la BD**: `user_house_points`
 
 **Campos**:
 
 | Campo              | Tipo        | Descripción                                  |
 | ------------------ | ----------- | -------------------------------------------- |
 | `id`               | UUID        | ID único                                     |
-| `user_id`          | UUID        | ID del usuario (FK a `profiles.id`)          |
+| `user_id`          | UUID        | ID del usuario (FK a `users.id`)             |
 | `house_id`         | UUID        | ID de la casa (FK a `houses.id`)             |
 | `total_points`     | INTEGER     | Puntos totales acumulados (incluye vencidos) |
 | `available_points` | INTEGER     | Puntos disponibles (no vencidos)             |
@@ -674,7 +704,7 @@ Almacena el total de puntos acumulados y disponibles de un usuario en una casa e
 
 **Relaciones**:
 
-- Los puntos pertenecen a un usuario (`profiles.id`)
+- Los puntos pertenecen a un usuario (`users.id`)
 - Los puntos pertenecen a una casa (`houses.id`)
 
 **Reglas de Negocio**:
@@ -702,7 +732,7 @@ SELECT
   uhp.total_points,
   uhp.available_points
 FROM user_house_points uhp
-JOIN profiles p ON p.id = uhp.user_id
+JOIN users u ON u.id = uhp.user_id
 WHERE uhp.house_id = 'house-uuid'
 ORDER BY uhp.total_points DESC;
 ```
@@ -727,14 +757,14 @@ import type {
 **¿Qué es?**
 Registra cada movimiento de puntos (ganados, perdidos, canjeados) con información detallada sobre cuándo y por qué se otorgaron.
 
-**Ubicación en la BD**: `public.point_history`
+**Ubicación en la BD**: `point_history`
 
 **Campos**:
 
 | Campo         | Tipo        | Descripción                                                               |
 | ------------- | ----------- | ------------------------------------------------------------------------- |
 | `id`          | UUID        | ID único                                                                  |
-| `user_id`     | UUID        | ID del usuario (FK a `profiles.id`)                                       |
+| `user_id`     | UUID        | ID del usuario (FK a `users.id`)                                          |
 | `house_id`    | UUID        | ID de la casa (FK a `houses.id`)                                          |
 | `task_id`     | UUID        | ID de la tarea que generó los puntos (FK a `tasks.id`, nullable)          |
 | `points`      | INTEGER     | Cantidad de puntos (puede ser positivo o negativo)                        |
@@ -752,7 +782,7 @@ Registra cada movimiento de puntos (ganados, perdidos, canjeados) con informaci�
 
 **Relaciones**:
 
-- Un movimiento pertenece a un usuario (`profiles.id`)
+- Un movimiento pertenece a un usuario (`users.id`)
 - Un movimiento pertenece a una casa (`houses.id`)
 - Un movimiento puede estar relacionado con una tarea (`tasks.id`)
 
@@ -806,7 +836,7 @@ GROUP BY points_type;
 **¿Qué es?**
 Representa los premios que se pueden canjear con puntos en una casa. Los premios pueden tener stock limitado.
 
-**Ubicación en la BD**: `public.house_rewards`
+**Ubicación en la BD**: `house_rewards`
 
 **Campos**:
 
@@ -897,7 +927,7 @@ import type {
 **¿Qué es?**
 Registra cada vez que un usuario canjea un premio con sus puntos.
 
-**Ubicación en la BD**: `public.reward_redemptions`
+**Ubicación en la BD**: `reward_redemptions`
 
 **Campos**:
 
@@ -905,7 +935,7 @@ Registra cada vez que un usuario canjea un premio con sus puntos.
 | -------------- | ----------- | ------------------------------------------------ |
 | `id`           | UUID        | ID único                                         |
 | `reward_id`    | UUID        | ID del premio canjeado (FK a `house_rewards.id`) |
-| `user_id`      | UUID        | ID del usuario que canjeó (FK a `profiles.id`)   |
+| `user_id`      | UUID        | ID del usuario que canjeó (FK a `users.id`)      |
 | `house_id`     | UUID        | ID de la casa (FK a `houses.id`)                 |
 | `points_spent` | INTEGER     | Puntos gastados (debe ser > 0)                   |
 | `redeemed_at`  | TIMESTAMPTZ | Fecha de canje                                   |
@@ -913,7 +943,7 @@ Registra cada vez que un usuario canjea un premio con sus puntos.
 **Relaciones**:
 
 - Un canje pertenece a un premio (`house_rewards.id`)
-- Un canje pertenece a un usuario (`profiles.id`)
+- Un canje pertenece a un usuario (`users.id`)
 - Un canje pertenece a una casa (`houses.id`)
 
 **Reglas de Negocio**:
@@ -966,7 +996,7 @@ ORDER BY redemption_count DESC;
 **¿Qué es?**
 Registra las invitaciones que se envían a usuarios para unirse a una casa como ocupantes.
 
-**Ubicación en la BD**: `public.house_invitations`
+**Ubicación en la BD**: `house_invitations`
 
 **Campos**:
 
@@ -974,8 +1004,8 @@ Registra las invitaciones que se envían a usuarios para unirse a una casa como 
 | ----------------- | ----------- | -------------------------------------------------------------------- |
 | `id`              | UUID        | ID único                                                             |
 | `house_id`        | UUID        | ID de la casa (FK a `houses.id`)                                     |
-| `invited_by`      | UUID        | ID de quien envió la invitación (FK a `profiles.id`)                 |
-| `invited_user_id` | UUID        | ID del usuario invitado (FK a `profiles.id`)                         |
+| `invited_by`      | UUID        | ID de quien envió la invitación (FK a `users.id`)                    |
+| `invited_user_id` | UUID        | ID del usuario invitado (FK a `users.id`)                            |
 | `role`            | ENUM        | Rol que se le asignará: `'occupant_with_permissions'` o `'occupant'` |
 | `status`          | ENUM        | Estado: `'pending'`, `'accepted'`, `'rejected'`, `'canceled'`        |
 | `created_at`      | TIMESTAMPTZ | Fecha de creación                                                    |
@@ -992,8 +1022,8 @@ Registra las invitaciones que se envían a usuarios para unirse a una casa como 
 **Relaciones**:
 
 - Una invitación pertenece a una casa (`houses.id`)
-- Una invitación es enviada por un usuario (`profiles.id` como `invited_by`)
-- Una invitación es para un usuario (`profiles.id` como `invited_user_id`)
+- Una invitación es enviada por un usuario (`users.id` como `invited_by`)
+- Una invitación es para un usuario (`users.id` como `invited_user_id`)
 
 **Reglas de Negocio**:
 
@@ -1032,7 +1062,7 @@ SELECT
   p.full_name as inviter_name
 FROM house_invitations hi
 JOIN houses h ON h.id = hi.house_id
-JOIN profiles p ON p.id = hi.invited_by
+JOIN users u ON u.id = hi.invited_by
 WHERE hi.invited_user_id = 'user-uuid'
   AND hi.status = 'pending'
 ORDER BY hi.created_at DESC;
@@ -1048,6 +1078,115 @@ import type {
   UpdateHouseInvitationParams,
   InvitationStatus,
 } from '@modules/house/types/house.types';
+```
+
+---
+
+### 14. Notifications (Notificaciones)
+
+**¿Qué es?**
+Registra todas las notificaciones programadas y enviadas del sistema. Permite gestionar recordatorios de tareas, notificaciones de validación, y eventos de miembros (nuevo miembro, miembro que se va).
+
+**Ubicación en la BD**: `notifications`
+
+**Campos**:
+
+| Campo               | Tipo        | Descripción                                                                      |
+| ------------------- | ----------- | -------------------------------------------------------------------------------- |
+| `id`                | UUID        | ID único de la notificación                                                      |
+| `user_id`           | UUID        | ID del usuario que recibe la notificación (FK a `users.id`)                      |
+| `task_id`           | UUID        | ID de la tarea relacionada (FK a `tasks.id`, nullable)                           |
+| `house_id`          | UUID        | ID de la casa relacionada (FK a `houses.id`, nullable)                           |
+| `notification_type` | ENUM        | Tipo: `'task_reminder'`, `'task_validation'`, `'member_joined'`, `'member_left'` |
+| `scheduled_for`     | TIMESTAMPTZ | Cuándo se debe enviar la notificación                                            |
+| `sent_at`           | TIMESTAMPTZ | Cuándo se envió realmente (nullable)                                             |
+| `created_at`        | TIMESTAMPTZ | Fecha de creación                                                                |
+
+**Tipos de Notificaciones**:
+
+- **`task_reminder`**: Recordatorio para completar una tarea antes de la fecha límite
+  - Requiere `task_id` (no nullable)
+  - Se programa basado en `due_date - notification_minutes_before`
+- **`task_validation`**: Notificación cuando una tarea puede ser validada
+  - Requiere `task_id` (no nullable)
+  - Se envía cuando una tarea cambia a estado `'completed'` y requiere validación
+- **`member_joined`**: Notificación cuando un nuevo miembro se une a la casa
+  - Requiere `house_id` (no nullable)
+  - Se envía a dueños y ocupantes con permisos cuando se acepta una invitación
+- **`member_left`**: Notificación cuando un miembro deja la casa
+  - Requiere `house_id` (no nullable)
+  - Se envía a dueños y ocupantes con permisos cuando un ocupante es eliminado
+
+**Relaciones**:
+
+- Una notificación pertenece a un usuario (`users.id`)
+- Una notificación puede estar relacionada con una tarea (`tasks.id`)
+- Una notificación puede estar relacionada con una casa (`houses.id`)
+
+**Reglas de Negocio**:
+
+- **Constraint de integridad**:
+  - Notificaciones de tipo `task_reminder` o `task_validation` deben tener `task_id`
+  - Notificaciones de tipo `member_joined` o `member_left` deben tener `house_id`
+- Una notificación se envía solo si:
+  1. El usuario tiene `notifications_enabled = true` en sus preferencias (global)
+  2. El tipo específico de notificación está habilitado en las preferencias del usuario
+  3. Para `task_reminder`: la tarea tiene `notification_enabled = true`
+- Si una notificación se pierde (pasó `scheduled_for` sin enviarse), no se envía retroactivamente
+- `sent_at` se actualiza cuando la notificación se envía realmente
+- Las notificaciones se eliminan automáticamente si se elimina el usuario, tarea o casa relacionada (CASCADE)
+
+**Ejemplo de Uso**:
+
+```sql
+-- Crear notificación de recordatorio de tarea
+INSERT INTO notifications (
+  user_id,
+  task_id,
+  notification_type,
+  scheduled_for
+)
+VALUES (
+  'user-uuid',
+  'task-uuid',
+  'task_reminder',
+  '2025-12-20 10:00:00+00'::timestamptz
+);
+
+-- Obtener notificaciones pendientes de un usuario
+SELECT *
+FROM notifications
+WHERE user_id = 'user-uuid'
+  AND sent_at IS NULL
+  AND scheduled_for <= NOW()
+ORDER BY scheduled_for ASC;
+
+-- Marcar notificación como enviada
+UPDATE notifications
+SET sent_at = NOW()
+WHERE id = 'notification-uuid';
+
+-- Obtener notificaciones de validación pendientes
+SELECT n.*, t.title as task_title
+FROM notifications n
+JOIN tasks t ON t.id = n.task_id
+WHERE n.user_id = 'user-uuid'
+  AND n.notification_type = 'task_validation'
+  AND n.sent_at IS NULL
+  AND t.status = 'completed'
+ORDER BY n.scheduled_for ASC;
+```
+
+**Tipos TypeScript**: Ver `src/shared/types/database.types.ts`
+
+```typescript
+// Ejemplo de tipos disponibles
+import type {
+  Notification,
+  NotificationType,
+  CreateNotificationParams,
+  UpdateNotificationParams,
+} from '@shared/types/database.types';
 ```
 
 ---
@@ -1103,7 +1242,7 @@ La base de datos incluye varias funciones y triggers que automatizan procesos im
 **`handle_new_user()`**
 
 - Cuando se crea un usuario en `auth.users`:
-  1. Crea automáticamente un perfil en `profiles`
+  1. Crea automáticamente un usuario en `users`
   2. Crea automáticamente preferencias en `user_preferences`
 - Se ejecuta después de INSERT en `auth.users`
 
@@ -1162,6 +1301,155 @@ LIMIT 10;
 
 **Archivo de migración**: `supabase/migrations/005_enable_pg_cron_and_schedule_expire_points.sql`
 
+### Sistema de Notificaciones
+
+El sistema de notificaciones permite enviar recordatorios y alertas a los usuarios sobre eventos importantes. Las notificaciones se gestionan mediante la tabla `notifications` y se crean desde la aplicación según eventos específicos.
+
+**Tipos de Notificaciones y Cuándo Crearlas**:
+
+1. **`task_reminder`** - Recordatorio para completar tarea
+   - **Cuándo crear**: Al crear o actualizar una tarea con `notification_enabled = true`
+   - **Cálculo de `scheduled_for`**: `due_date - notification_minutes_before` (convertir a TIMESTAMPTZ)
+   - **Ejemplo**:
+
+   ```sql
+   -- Crear notificación de recordatorio al crear tarea
+   INSERT INTO notifications (user_id, task_id, notification_type, scheduled_for)
+   SELECT
+     t.assigned_to,
+     t.id,
+     'task_reminder',
+     (t.due_date::timestamp - (t.notification_minutes_before || ' minutes')::interval)::timestamptz
+   FROM tasks t
+   WHERE t.id = 'task-uuid'
+     AND t.notification_enabled = true
+     AND t.notification_minutes_before IS NOT NULL;
+   ```
+
+2. **`task_validation`** - Notificación cuando tarea puede ser validada
+   - **Cuándo crear**: Cuando una tarea cambia a estado `'completed'` y `requires_validation = true`
+   - **Cálculo de `scheduled_for`**: `NOW()` (inmediata)
+   - **Destinatarios**: Dueño de la casa, ocupantes con permisos, y validador designado (si existe)
+   - **Ejemplo**:
+
+   ```sql
+   -- Crear notificaciones de validación cuando tarea se completa
+   INSERT INTO notifications (user_id, task_id, notification_type, scheduled_for)
+   SELECT DISTINCT
+     u.id,
+     t.id,
+     'task_validation',
+     NOW()
+   FROM tasks t
+   JOIN houses h ON h.id = t.house_id
+   JOIN house_occupants ho ON ho.house_id = h.id
+   JOIN users u ON u.id IN (
+     h.owner_id,
+     CASE WHEN ho.role IN ('owner', 'occupant_with_permissions') THEN ho.user_id END,
+     CASE WHEN t.validator_id IS NOT NULL THEN t.validator_id END
+   )
+   WHERE t.id = 'task-uuid'
+     AND t.status = 'completed'
+     AND t.requires_validation = true
+     AND u.id IS NOT NULL;
+   ```
+
+3. **`member_joined`** - Nuevo miembro se une a la casa
+   - **Cuándo crear**: Cuando una invitación cambia a estado `'accepted'` (en el trigger `handle_invitation_accepted` o desde la aplicación)
+   - **Cálculo de `scheduled_for`**: `NOW()` (inmediata)
+   - **Destinatarios**: Dueño de la casa y ocupantes con permisos
+   - **Ejemplo**:
+
+   ```sql
+   -- Crear notificaciones cuando nuevo miembro se une
+   INSERT INTO notifications (user_id, house_id, notification_type, scheduled_for)
+   SELECT DISTINCT
+     u.id,
+     h.id,
+     'member_joined',
+     NOW()
+   FROM houses h
+   JOIN house_occupants ho ON ho.house_id = h.id
+   JOIN users u ON u.id IN (
+     h.owner_id,
+     CASE WHEN ho.role IN ('owner', 'occupant_with_permissions') THEN ho.user_id END
+   )
+   WHERE h.id = 'house-uuid'
+     AND u.id != 'new-member-uuid'; -- Excluir al nuevo miembro
+   ```
+
+4. **`member_left`** - Miembro deja la casa
+   - **Cuándo crear**: Cuando se elimina un ocupante de `house_occupants` (desde la aplicación)
+   - **Cálculo de `scheduled_for`**: `NOW()` (inmediata)
+   - **Destinatarios**: Dueño de la casa y ocupantes con permisos
+   - **Ejemplo**:
+   ```sql
+   -- Crear notificaciones cuando miembro deja la casa
+   INSERT INTO notifications (user_id, house_id, notification_type, scheduled_for)
+   SELECT DISTINCT
+     u.id,
+     h.id,
+     'member_left',
+     NOW()
+   FROM houses h
+   JOIN house_occupants ho ON ho.house_id = h.id
+   JOIN users u ON u.id IN (
+     h.owner_id,
+     CASE WHEN ho.role IN ('owner', 'occupant_with_permissions') THEN ho.user_id END
+   )
+   WHERE h.id = 'house-uuid'
+     AND u.id != 'member-left-uuid'; -- Excluir al miembro que se va
+   ```
+
+**Lógica de Envío de Notificaciones**:
+
+Antes de enviar una notificación, verificar que se cumplan todas las condiciones:
+
+```sql
+-- Verificar si una notificación debe enviarse
+SELECT
+  n.*,
+  up.notifications_enabled as global_enabled,
+  CASE
+    WHEN n.notification_type = 'task_reminder' THEN up.notifications_task_reminder_enabled
+    WHEN n.notification_type = 'task_validation' THEN up.notifications_task_validation_enabled
+    WHEN n.notification_type = 'member_joined' THEN up.notifications_member_joined_enabled
+    WHEN n.notification_type = 'member_left' THEN up.notifications_member_left_enabled
+  END as type_enabled,
+  CASE
+    WHEN n.notification_type = 'task_reminder' THEN t.notification_enabled
+    ELSE true
+  END as task_notification_enabled
+FROM notifications n
+JOIN users u ON u.id = n.user_id
+JOIN user_preferences up ON up.user_id = u.id
+LEFT JOIN tasks t ON t.id = n.task_id
+WHERE n.id = 'notification-uuid'
+  AND n.sent_at IS NULL
+  AND n.scheduled_for <= NOW()
+  AND up.notifications_enabled = true
+  AND (
+    (n.notification_type = 'task_reminder' AND up.notifications_task_reminder_enabled = true AND t.notification_enabled = true) OR
+    (n.notification_type = 'task_validation' AND up.notifications_task_validation_enabled = true) OR
+    (n.notification_type = 'member_joined' AND up.notifications_member_joined_enabled = true) OR
+    (n.notification_type = 'member_left' AND up.notifications_member_left_enabled = true)
+  );
+```
+
+**Proceso de Envío**:
+
+1. Consultar notificaciones pendientes (`sent_at IS NULL` y `scheduled_for <= NOW()`)
+2. Verificar preferencias del usuario (global y tipo específico)
+3. Para `task_reminder`, verificar que la tarea tenga `notification_enabled = true`
+4. Enviar la notificación (push notification, email, etc.)
+5. Actualizar `sent_at = NOW()` en la tabla `notifications`
+
+**Notas Importantes**:
+
+- Si una notificación se pierde (pasó `scheduled_for` sin enviarse), no se envía retroactivamente
+- La configuración de notificaciones en la tarea (`notification_enabled`) se mantiene aunque se desactive en preferencias (para reactivarlas en el futuro)
+- Las notificaciones de tareas recurrentes deben crearse para cada nueva instancia de la tarea
+
 ---
 
 ## Row Level Security (RLS)
@@ -1170,7 +1458,7 @@ Todas las tablas (excepto `user_limits`) tienen Row Level Security habilitado. E
 
 ### Políticas Principales
 
-**Profiles y Preferences**:
+**Users y Preferences**:
 
 - Los usuarios solo pueden ver y editar su propio perfil y preferencias
 
@@ -1210,6 +1498,12 @@ Todas las tablas (excepto `user_limits`) tienen Row Level Security habilitado. E
 
 - Los usuarios pueden ver premios de casas donde pertenecen
 - Solo dueños y ocupantes con permisos pueden gestionar premios
+
+**Notifications**:
+
+- Los usuarios solo pueden ver sus propias notificaciones
+- El sistema puede insertar notificaciones para usuarios (mediante políticas RLS)
+- Los usuarios pueden actualizar sus propias notificaciones (marcar como enviadas)
 - Todos los ocupantes pueden canjear premios
 
 **Invitations**:
@@ -1289,6 +1583,8 @@ Las migraciones se aplicaron en el siguiente orden:
 3. **`003_functions_and_triggers`**: Funciones y triggers automáticos
 4. **`004_row_level_security_policies_fixed`**: Políticas de seguridad RLS
 5. **`005_enable_pg_cron_and_schedule_expire_points`**: Habilitación de pg_cron y configuración del cron job para expiración de puntos
+6. **`006_rename_profiles_to_users`**: Renombra la tabla `profiles` a `users` y actualiza todas las referencias
+7. **`007_add_notifications_system`**: Agrega sistema de notificaciones (tabla notifications, campos en user_preferences y tasks)
 
 **Archivos de migración**: Todas las migraciones están guardadas en `supabase/migrations/` para referencia y versionado.
 
