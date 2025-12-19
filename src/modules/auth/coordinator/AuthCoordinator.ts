@@ -26,6 +26,7 @@ export class AuthCoordinator {
   }
 
   static navigateToCreateHouse() {
-    router.replace('/tasks/create');
+    // TODO: Implement create house logic
+    router.replace('/(tabs)/home');
   }
 }

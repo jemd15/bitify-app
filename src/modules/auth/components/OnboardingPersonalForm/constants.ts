@@ -14,6 +14,7 @@ const ONBOARDING_PERSONAL_FORM_LABELS = {
   SELECT_AVATAR: t`Select Avatar`,
   CHANGE_AVATAR: t`Change Avatar`,
   UPLOADING: t`Uploading...`,
+  AVATAR_ACCESSIBILITY_LABEL: t`User avatar`,
 } as const;
 
 export { errorMessages, ONBOARDING_PERSONAL_FORM_LABELS };

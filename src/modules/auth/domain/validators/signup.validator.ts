@@ -14,7 +14,7 @@ export const signupSchema = z
         message: 'PASSWORD_MISSING_UPPERCASE',
       })
       .refine(password => /\d/.test(password), { message: 'PASSWORD_MISSING_DIGIT' })
-      .refine(password => /[@$!%*?&=]/.test(password), {
+      .refine(password => /[@$!%*?&=+^ñáéíóúüÑÁÉÍÓÚÜ#]/.test(password), {
         message: 'PASSWORD_MISSING_SPECIAL_CHAR',
       }),
     confirmPassword: z.string().min(1, 'CONFIRM_PASSWORD_REQUIRED'),
