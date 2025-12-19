@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@lib/supabase';
 import { useAuthSession } from '@modules/auth/hooks/useAuthSession';
@@ -50,6 +50,11 @@ const mapUserPreferencesFromDb = (data: any): UserPreferences => {
 export const useUserPreferences = () => {
   const { data: session } = useAuthSession();
   const queryClient = useQueryClient();
+  const previousValuesRef = useRef<{
+    theme?: Theme;
+    language?: AppLanguage;
+    notificationsEnabled?: boolean;
+  }>({});
   const query = useQuery<UserPreferences | null>({
     queryKey: RQKEY_PREFERENCES,
     queryFn: async () => {
@@ -95,12 +100,29 @@ export const useUserPreferences = () => {
 
         if (!preferences) return;
 
-        await device.set([STORAGE_KEY_PREFERENCES], {
+        const previousValues = previousValuesRef.current;
+        const hasThemeChanged = previousValues.theme !== preferences.theme;
+        const hasLanguageChanged = previousValues.language !== preferences.language;
+        const hasNotificationsChanged =
+          previousValues.notificationsEnabled !== preferences.notificationsEnabled;
+
+        if (hasThemeChanged || hasNotificationsChanged) {
+          await device.set([STORAGE_KEY_PREFERENCES], {
+            theme: preferences.theme,
+            notificationsEnabled: preferences.notificationsEnabled,
+          });
+        }
+
+        if (hasLanguageChanged) {
+          await device.set([STORAGE_KEY_APP_LANGUAGE], preferences.language);
+          dynamicActivate(preferences.language);
+        }
+
+        previousValuesRef.current = {
           theme: preferences.theme,
+          language: preferences.language,
           notificationsEnabled: preferences.notificationsEnabled,
-        });
-        await device.set([STORAGE_KEY_APP_LANGUAGE], preferences.language);
-        dynamicActivate(preferences.language);
+        };
       };
 
       syncToLocalStorage();
