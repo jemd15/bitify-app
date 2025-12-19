@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { ScrollView } from 'react-native';
 import { useLingui } from '@lingui/react';
 import { Box, VStack, Text } from '@gluestack-ui/themed';
@@ -7,9 +7,9 @@ import { useProfile } from '@modules/account/hooks/useProfile';
 import { useUpdateProfile } from '@modules/account/hooks/useUpdateProfile';
 import { useUserPreferences } from '@modules/account/hooks/useUserPreferences';
 import { useUpdateUserPreferences } from '@modules/account/hooks/useUpdateUserPreferences';
+import { AvatarHeader } from '@shared/components';
 import { device, useStorage } from '@shared/storage';
 import { SUPPORTED_LANGUAGES, AppLanguage } from '@locale/languages';
-import { dynamicActivate } from '@locale/i18n';
 
 import type { Theme } from '../../types/account.types';
 import {
@@ -23,7 +23,7 @@ import {
   DEFAULT_NOTIFICATIONS_ENABLED,
 } from '../../constants/account.constants';
 import { ProfileMenuItem } from '../../components/ProfileMenuItem';
-import { ProfileHeader } from '../../components/ProfileHeader';
+import { useUploadAvatar } from '../../hooks/useUploadAvatar';
 import { AccountCoordinator } from '../../coordinator/AccountCoordinator';
 import type { ProfileScreenProps } from '../../types/account.types';
 import type { RightElement } from '../../components/ProfileMenuItem/types';
@@ -42,6 +42,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
   const logoutMutation = useLogout();
   const { data: profile } = useProfile();
   const updateProfileMutation = useUpdateProfile();
+  const uploadAvatarMutation = useUploadAvatar();
   const { data: preferences } = useUserPreferences();
   const updatePreferencesMutation = useUpdateUserPreferences();
   const [localPreferences] = useStorage(device, [STORAGE_KEY_PREFERENCES]);
@@ -54,9 +55,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
     LANGUAGE_VALUE_ES) as AppLanguage;
   const notificationsEnabled =
     preferences?.notificationsEnabled ?? DEFAULT_NOTIFICATIONS_ENABLED;
-  useEffect(() => {
-    dynamicActivate(language);
-  }, [language]);
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
@@ -164,7 +162,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
       _,
       themeOptions,
       languageOptions,
-      updatePreferencesMutation,
     ],
   );
 
@@ -174,10 +171,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
         <Text style={styles.headerTitle}>{_(ACCOUNT_CONSTANTS.PROFILE_TITLE)}</Text>
       </Box>
       <ScrollView>
-        <ProfileHeader
+        <AvatarHeader
           avatarUrl={profile?.avatarUrl ?? undefined}
           fullName={profile?.fullName ?? undefined}
           onAvatarChange={handleAvatarChange}
+          uploadAvatarMutation={uploadAvatarMutation}
         />
         <VStack style={styles.menuSection}>
           {menuItems.map((item, index) => (
