@@ -1,15 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  avatarContainer: {
-    alignItems: 'center',
-    backgroundColor: '#aaa',
-    borderRadius: 50,
-    height: 100,
-    justifyContent: 'center',
-    marginBottom: 16,
-    width: 100,
-  },
   container: {
     flex: 1,
   },
@@ -26,13 +17,5 @@ export const styles = StyleSheet.create({
   },
   menuSection: {
     paddingHorizontal: 0,
-  },
-  profileSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 32,
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: '600',
   },
 });

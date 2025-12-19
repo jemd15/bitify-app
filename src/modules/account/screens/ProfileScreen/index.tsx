@@ -1,12 +1,29 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { ScrollView } from 'react-native';
 import { useLingui } from '@lingui/react';
 import { Box, VStack, Text } from '@gluestack-ui/themed';
-import { Ionicons } from '@expo/vector-icons';
 import { useLogout } from '@modules/auth/hooks/useLogut';
+import { useProfile } from '@modules/account/hooks/useProfile';
+import { useUpdateProfile } from '@modules/account/hooks/useUpdateProfile';
+import { useUserPreferences } from '@modules/account/hooks/useUserPreferences';
+import { useUpdateUserPreferences } from '@modules/account/hooks/useUpdateUserPreferences';
+import { device, useStorage } from '@shared/storage';
+import { SUPPORTED_LANGUAGES, AppLanguage } from '@locale/languages';
+import { dynamicActivate } from '@locale/i18n';
 
-import { ACCOUNT_CONSTANTS } from '../../constants/account.constants';
+import type { Theme } from '../../types/account.types';
+import {
+  ACCOUNT_CONSTANTS,
+  THEME_VALUE_LIGHT,
+  THEME_VALUE_DARK,
+  THEME_VALUE_AUTO,
+  LANGUAGE_VALUE_ES,
+  STORAGE_KEY_PREFERENCES,
+  STORAGE_KEY_APP_LANGUAGE,
+  DEFAULT_NOTIFICATIONS_ENABLED,
+} from '../../constants/account.constants';
 import { ProfileMenuItem } from '../../components/ProfileMenuItem';
+import { ProfileHeader } from '../../components/ProfileHeader';
 import { AccountCoordinator } from '../../coordinator/AccountCoordinator';
 import type { ProfileScreenProps } from '../../types/account.types';
 import type { RightElement } from '../../components/ProfileMenuItem/types';
@@ -23,6 +40,23 @@ interface MenuItemConfig {
 export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
   const { _ } = useLingui();
   const logoutMutation = useLogout();
+  const { data: profile } = useProfile();
+  const updateProfileMutation = useUpdateProfile();
+  const { data: preferences } = useUserPreferences();
+  const updatePreferencesMutation = useUpdateUserPreferences();
+  const [localPreferences] = useStorage(device, [STORAGE_KEY_PREFERENCES]);
+  const [localLanguage] = useStorage(device, [STORAGE_KEY_APP_LANGUAGE]);
+  const theme = (preferences?.theme ||
+    localPreferences?.theme ||
+    THEME_VALUE_AUTO) as Theme;
+  const language = (preferences?.language ||
+    localLanguage ||
+    LANGUAGE_VALUE_ES) as AppLanguage;
+  const notificationsEnabled =
+    preferences?.notificationsEnabled ?? DEFAULT_NOTIFICATIONS_ENABLED;
+  useEffect(() => {
+    dynamicActivate(language);
+  }, [language]);
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
@@ -30,25 +64,86 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
       },
     });
   };
+  const handleAvatarChange = async (avatarUrl: string) => {
+    await updateProfileMutation.mutateAsync({
+      avatarUrl,
+    });
+  };
+  const handleProPlan = () => {};
+  const handleThemeChange = useCallback(
+    async (value: string) => {
+      await updatePreferencesMutation.mutateAsync({ theme: value as Theme });
+    },
+    [updatePreferencesMutation],
+  );
+  const handleLanguageChange = useCallback(
+    async (value: string) => {
+      await updatePreferencesMutation.mutateAsync({ language: value as AppLanguage });
+    },
+    [updatePreferencesMutation],
+  );
+  const handleNotificationsChange = useCallback(
+    async (value: boolean) => {
+      await updatePreferencesMutation.mutateAsync({ notificationsEnabled: value });
+    },
+    [updatePreferencesMutation],
+  );
+  const themeOptions = useMemo(
+    () => [
+      { label: _(ACCOUNT_CONSTANTS.THEME_LIGHT), value: THEME_VALUE_LIGHT },
+      { label: _(ACCOUNT_CONSTANTS.THEME_DARK), value: THEME_VALUE_DARK },
+      { label: _(ACCOUNT_CONSTANTS.THEME_AUTO), value: THEME_VALUE_AUTO },
+    ],
+    [_],
+  );
+  const languageOptions = useMemo(
+    () =>
+      SUPPORTED_LANGUAGES.map(lang => ({
+        label: lang.nativeLabel,
+        value: lang.code,
+      })),
+    [],
+  );
   const menuItems: MenuItemConfig[] = useMemo(
     () => [
       {
-        leftIcon: 'document-text-outline',
-        titleKey: 'MENU_ITEM_PLAN_PRO_TITLE',
-        descriptionKey: 'MENU_ITEM_PLAN_PRO_DESCRIPTION',
+        leftIcon: 'star-outline',
+        titleKey: 'MENU_ITEM_PRO_PLAN_TITLE',
+        descriptionKey: 'MENU_ITEM_PRO_PLAN_DESCRIPTION',
         rightElement: { type: 'icon', name: 'chevron-forward-outline' },
+        onPress: handleProPlan,
       },
       {
-        leftIcon: 'trending-up-outline',
-        titleKey: 'MENU_ITEM_INVESTMENTS_TITLE',
-        descriptionKey: 'MENU_ITEM_INVESTMENTS_DESCRIPTION',
-        rightElement: { type: 'icon', name: 'chevron-forward-outline' },
+        leftIcon: 'color-palette-outline',
+        titleKey: 'MENU_ITEM_THEME_TITLE',
+        descriptionKey: 'MENU_ITEM_THEME_DESCRIPTION',
+        rightElement: {
+          type: 'select',
+          value: theme ?? THEME_VALUE_AUTO,
+          options: themeOptions,
+          onValueChange: handleThemeChange,
+        },
       },
       {
-        leftIcon: 'settings-outline',
-        titleKey: 'MENU_ITEM_PREFERENCES_TITLE',
-        descriptionKey: 'MENU_ITEM_PREFERENCES_DESCRIPTION',
-        rightElement: { type: 'icon', name: 'chevron-forward-outline' },
+        leftIcon: 'language-outline',
+        titleKey: 'MENU_ITEM_LANGUAGE_TITLE',
+        descriptionKey: 'MENU_ITEM_LANGUAGE_DESCRIPTION',
+        rightElement: {
+          type: 'select',
+          value: language ?? LANGUAGE_VALUE_ES,
+          options: languageOptions,
+          onValueChange: handleLanguageChange,
+        },
+      },
+      {
+        leftIcon: 'notifications-outline',
+        titleKey: 'MENU_ITEM_NOTIFICATIONS_TITLE',
+        descriptionKey: 'MENU_ITEM_NOTIFICATIONS_DESCRIPTION',
+        rightElement: {
+          type: 'switch',
+          value: notificationsEnabled,
+          onValueChange: handleNotificationsChange,
+        },
       },
       {
         leftIcon: 'log-out-outline',
@@ -57,7 +152,20 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
         onPress: handleLogout,
       },
     ],
-    [handleLogout],
+    [
+      handleLogout,
+      handleProPlan,
+      handleThemeChange,
+      handleLanguageChange,
+      handleNotificationsChange,
+      theme,
+      language,
+      notificationsEnabled,
+      _,
+      themeOptions,
+      languageOptions,
+      updatePreferencesMutation,
+    ],
   );
 
   return (
@@ -66,14 +174,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
         <Text style={styles.headerTitle}>{_(ACCOUNT_CONSTANTS.PROFILE_TITLE)}</Text>
       </Box>
       <ScrollView>
-        <VStack style={styles.profileSection} alignItems="center">
-          <Box style={styles.avatarContainer}>
-            <Ionicons name="person-outline" size={80} color="#FFFFFF" />
-          </Box>
-          <Text style={styles.userName}>
-            {_(ACCOUNT_CONSTANTS.PROFILE_USER_PLACEHOLDER)}
-          </Text>
-        </VStack>
+        <ProfileHeader
+          avatarUrl={profile?.avatarUrl ?? undefined}
+          fullName={profile?.fullName ?? undefined}
+          onAvatarChange={handleAvatarChange}
+        />
         <VStack style={styles.menuSection}>
           {menuItems.map((item, index) => (
             <ProfileMenuItem

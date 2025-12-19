@@ -22,10 +22,17 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 16,
   },
+  selectInput: {
+    color: '#666',
+    fontSize: 14,
+  },
   selectText: {
     color: '#666',
     fontSize: 14,
     marginRight: 4,
+  },
+  selectTrigger: {
+    minWidth: 120,
   },
   title: {
     fontSize: 16,
