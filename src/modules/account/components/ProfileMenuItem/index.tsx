@@ -1,7 +1,23 @@
 import React from 'react';
 import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Box, HStack, VStack, Text, Switch } from '@gluestack-ui/themed';
+import {
+  Box,
+  HStack,
+  VStack,
+  Text,
+  Switch,
+  Select,
+  SelectTrigger,
+  SelectInput,
+  SelectIcon,
+  SelectPortal,
+  SelectBackdrop,
+  SelectContent,
+  SelectDragIndicatorWrapper,
+  SelectDragIndicator,
+  SelectItem,
+} from '@gluestack-ui/themed';
 
 import type { ProfileMenuItemProps } from './types';
 import { styles } from './styles';
@@ -33,8 +49,32 @@ export const ProfileMenuItem: React.FC<ProfileMenuItemProps> = ({
       case 'select':
         return (
           <Box style={styles.rightElementContainer}>
-            <Text style={styles.selectText}>{rightElement.value}</Text>
-            <Ionicons name="chevron-down-outline" size={16} color="#666" />
+            <Select
+              selectedValue={rightElement.value}
+              onValueChange={rightElement.onValueChange}
+            >
+              <SelectTrigger style={styles.selectTrigger}>
+                <SelectInput style={styles.selectInput} />
+                <SelectIcon>
+                  <Ionicons name="chevron-down-outline" size={16} color="#666" />
+                </SelectIcon>
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectBackdrop />
+                <SelectContent>
+                  <SelectDragIndicatorWrapper>
+                    <SelectDragIndicator />
+                  </SelectDragIndicatorWrapper>
+                  {rightElement.options.map(option => (
+                    <SelectItem
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                    />
+                  ))}
+                </SelectContent>
+              </SelectPortal>
+            </Select>
           </Box>
         );
       case 'none':
@@ -43,15 +83,7 @@ export const ProfileMenuItem: React.FC<ProfileMenuItemProps> = ({
         return null;
     }
   };
-  const isPressable =
-    rightElement.type === 'icon' ||
-    rightElement.type === 'none' ||
-    rightElement.type === 'select';
-  const handleSelectPress = () => {
-    if (rightElement.type === 'select' && onPress) {
-      onPress();
-    }
-  };
+  const isPressable = rightElement.type === 'icon' || rightElement.type === 'none';
   const content = (
     <HStack style={styles.container} alignItems="center">
       <Box style={styles.leftIconContainer}>
@@ -66,11 +98,7 @@ export const ProfileMenuItem: React.FC<ProfileMenuItemProps> = ({
   );
 
   if (isPressable && onPress) {
-    return (
-      <Pressable onPress={rightElement.type === 'select' ? handleSelectPress : onPress}>
-        {content}
-      </Pressable>
-    );
+    return <Pressable onPress={onPress}>{content}</Pressable>;
   }
 
   return <Box>{content}</Box>;

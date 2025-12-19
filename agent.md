@@ -52,7 +52,7 @@ Los componentes son funciones que retornan elementos de UI (interfaz de usuario)
    - Solo muestran datos
    - Reciben datos vía props
    - No manejan estado complejo
-   - Ejemplo: `TaskCard`
+   - Ejemplo: `TaskCard`, `Button`, `Input`
 
 2. **Container Components** (Componentes Contenedores):
    - Orquestan lógica y datos

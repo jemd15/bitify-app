@@ -568,6 +568,10 @@ CREATE POLICY "Users can view their own profile"
 ON users FOR SELECT
 USING (auth.uid() = id);
 
+CREATE POLICY "Users can create their own profile"
+ON users FOR INSERT
+WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "Users can update their own profile"
 ON users FOR UPDATE
 USING (auth.uid() = id);
@@ -579,6 +583,10 @@ USING (auth.uid() = id);
 CREATE POLICY "Users can view their own preferences"
 ON user_preferences FOR SELECT
 USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own preferences"
+ON user_preferences FOR INSERT
+WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own preferences"
 ON user_preferences FOR UPDATE
@@ -901,6 +909,50 @@ SELECT cron.schedule(
   'expire-points-daily',
   '0 3 * * *',
   $$SELECT expire_points()$$
+);
+
+-- ============================================================================
+-- 23. CONFIGURAR STORAGE BUCKET PARA ARCHIVOS DE USUARIOS
+-- ============================================================================
+
+-- Crear el bucket 'user_files' si no existe
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'user_files',
+  'user_files',
+  true,
+  5242880, -- 5MB en bytes
+  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Política RLS: Los usuarios pueden subir archivos a su propia carpeta
+CREATE POLICY "Users can upload files to their own folder"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'user_files' AND
+  auth.uid()::text = (storage.foldername(name))[1]
+);
+
+-- Política RLS: Los usuarios pueden ver todos los archivos (bucket público)
+CREATE POLICY "Anyone can view user files"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'user_files');
+
+-- Política RLS: Los usuarios pueden actualizar sus propios archivos
+CREATE POLICY "Users can update their own files"
+ON storage.objects FOR UPDATE
+USING (
+  bucket_id = 'user_files' AND
+  auth.uid()::text = (storage.foldername(name))[1]
+);
+
+-- Política RLS: Los usuarios pueden eliminar sus propios archivos
+CREATE POLICY "Users can delete their own files"
+ON storage.objects FOR DELETE
+USING (
+  bucket_id = 'user_files' AND
+  auth.uid()::text = (storage.foldername(name))[1]
 );
 
 -- ============================================================================

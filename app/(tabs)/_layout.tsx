@@ -1,18 +1,26 @@
 import { useEffect } from 'react';
-import { Tabs, router } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthSession } from '@modules/auth/hooks/useAuthSession';
+import { useOnboardingCheck } from '@modules/auth/hooks/useOnboardingCheck';
+import { AccountCoordinator } from '@modules/account/coordinator/AccountCoordinator';
+import { AuthCoordinator } from '@modules/auth/coordinator/AuthCoordinator';
 
 export default function TabsLayout() {
-  const { data: session, isLoading } = useAuthSession();
+  const { data: session, isLoading: isLoadingSession } = useAuthSession();
+  const { data: needsOnboarding, isLoading: isLoadingOnboarding } = useOnboardingCheck();
 
   useEffect(() => {
-    if (!isLoading && !session) {
-      router.replace('/account/auth');
+    if (!isLoadingSession && !isLoadingOnboarding) {
+      if (!session) {
+        AccountCoordinator.navigateToAuth();
+      } else if (needsOnboarding) {
+        AuthCoordinator.navigateToOnboarding();
+      }
     }
-  }, [isLoading, session]);
+  }, [isLoadingSession, isLoadingOnboarding, session, needsOnboarding]);
 
-  return (
+  return isLoadingSession || isLoadingOnboarding ? null : (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#007AFF',

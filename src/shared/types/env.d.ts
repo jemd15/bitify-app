@@ -6,7 +6,7 @@ declare namespace NodeJS {
     EXPO_PUBLIC_NODE_ENV: string;
     // Supabase Configuration
     EXPO_PUBLIC_SUPABASE_URL: string;
-    EXPO_PUBLIC_SUPABASE_ANON_KEY: string;
+    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: string;
     EXPO_PUBLIC_SUPABASE_PASS: string;
     EXPO_PUBLIC_GOOGLE_CLIENT_ID: string;
     EXPO_PUBLIC_GOOGLE_CLIENT_SECRET: string;

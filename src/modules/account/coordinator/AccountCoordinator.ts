@@ -19,7 +19,7 @@ export class AccountCoordinator {
    * Navigate to authentication screen
    */
   static navigateToAuth() {
-    router.push('/account/auth');
+    router.replace('/account/auth');
   }
 
   /**
