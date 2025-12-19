@@ -20,4 +20,12 @@ export class AuthCoordinator {
   static navigateToForgotPassword() {
     router.push('/account/forgot-password');
   }
+
+  static navigateToOnboarding() {
+    router.replace('/account/onboarding');
+  }
+
+  static navigateToCreateHouse() {
+    router.replace('/tasks/create');
+  }
 }
