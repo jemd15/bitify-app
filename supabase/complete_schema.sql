@@ -568,6 +568,10 @@ CREATE POLICY "Users can view their own profile"
 ON users FOR SELECT
 USING (auth.uid() = id);
 
+CREATE POLICY "Users can create their own profile"
+ON users FOR INSERT
+WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "Users can update their own profile"
 ON users FOR UPDATE
 USING (auth.uid() = id);
@@ -579,6 +583,10 @@ USING (auth.uid() = id);
 CREATE POLICY "Users can view their own preferences"
 ON user_preferences FOR SELECT
 USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own preferences"
+ON user_preferences FOR INSERT
+WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own preferences"
 ON user_preferences FOR UPDATE
