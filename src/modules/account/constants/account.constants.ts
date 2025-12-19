@@ -43,6 +43,7 @@ export const AVATAR_CONSTANTS = {
   AVATAR_ERROR_CAMERA_PERMISSION: msg`Permission to access camera is required`,
   AVATAR_ERROR_TAKE_PHOTO_FAILED: msg`Failed to take photo`,
   AVATAR_FALLBACK_INITIAL: msg`U`,
+  AVATAR_ACCESSIBILITY_LABEL: msg`User avatar`,
 } as const;
 
 export const LANGUAGE_CONSTANTS = {
@@ -95,3 +96,9 @@ export const FILE_EXTENSION_TO_MIME_TYPE: Record<string, string> = {
   jpeg: MIME_TYPE_JPEG,
   png: MIME_TYPE_PNG,
 } as const;
+
+export const STORAGE_BUCKET_USER_FILES = 'user_files' as const;
+export const AVATAR_FILE_PREFIX = 'avatar.' as const;
+export const AVATAR_DEFAULT_EXTENSION = 'jpg' as const;
+export const AVATAR_LIST_LIMIT = 100 as const;
+export const AVATAR_LIST_OFFSET = 0 as const;
