@@ -206,15 +206,6 @@ export const useUpdateUserPreferences = () => {
     },
     onSuccess: async data => {
       queryClient.setQueryData(RQKEY_PREFERENCES, data);
-      await device.set([STORAGE_KEY_PREFERENCES], {
-        theme: data.theme,
-        notificationsEnabled: data.notificationsEnabled,
-      });
-      await device.set([STORAGE_KEY_APP_LANGUAGE], data.language);
-      dynamicActivate(data.language);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: RQKEY_PREFERENCES });
     },
   });
 };

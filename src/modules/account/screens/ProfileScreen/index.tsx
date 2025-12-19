@@ -8,7 +8,6 @@ import { useUpdateProfile } from '@modules/account/hooks/useUpdateProfile';
 import { useUserPreferences } from '@modules/account/hooks/useUserPreferences';
 import { useUpdateUserPreferences } from '@modules/account/hooks/useUpdateUserPreferences';
 import { AvatarHeader } from '@shared/components';
-import { device, useStorage } from '@shared/storage';
 import { SUPPORTED_LANGUAGES, AppLanguage } from '@locale/languages';
 
 import type { Theme } from '../../types/account.types';
@@ -18,8 +17,6 @@ import {
   THEME_VALUE_DARK,
   THEME_VALUE_AUTO,
   LANGUAGE_VALUE_ES,
-  STORAGE_KEY_PREFERENCES,
-  STORAGE_KEY_APP_LANGUAGE,
   DEFAULT_NOTIFICATIONS_ENABLED,
 } from '../../constants/account.constants';
 import { ProfileMenuItem } from '../../components/ProfileMenuItem';
@@ -45,14 +42,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = () => {
   const uploadAvatarMutation = useUploadAvatar();
   const { data: preferences } = useUserPreferences();
   const updatePreferencesMutation = useUpdateUserPreferences();
-  const [localPreferences] = useStorage(device, [STORAGE_KEY_PREFERENCES]);
-  const [localLanguage] = useStorage(device, [STORAGE_KEY_APP_LANGUAGE]);
-  const theme = (preferences?.theme ||
-    localPreferences?.theme ||
-    THEME_VALUE_AUTO) as Theme;
-  const language = (preferences?.language ||
-    localLanguage ||
-    LANGUAGE_VALUE_ES) as AppLanguage;
+  const theme = (preferences?.theme || THEME_VALUE_AUTO) as Theme;
+  const language = (preferences?.language || LANGUAGE_VALUE_ES) as AppLanguage;
   const notificationsEnabled =
     preferences?.notificationsEnabled ?? DEFAULT_NOTIFICATIONS_ENABLED;
   const handleLogout = () => {
