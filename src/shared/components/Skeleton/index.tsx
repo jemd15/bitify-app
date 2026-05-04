@@ -1,17 +1,18 @@
-import { View, type ViewStyle } from 'react-native';
+import { View, type ViewStyle, type StyleProp } from 'react-native';
 import type { ReactNode } from 'react';
 
 import { styles } from './styles';
 
 interface SkeletonProps {
   blend?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function SkeletonText({
   blend,
   style,
   width,
-}: ViewStyle & SkeletonProps & { width?: number }) {
+}: SkeletonProps & { width?: number }) {
   return (
     <View style={[styles.textContainer, { maxWidth: width }, style]}>
       <View
@@ -31,11 +32,10 @@ export function SkeletonCircle({
   size,
   blend,
   style,
-}: ViewStyle &
-  SkeletonProps & {
-    children?: ReactNode;
-    size: number;
-  }) {
+}: SkeletonProps & {
+  children?: ReactNode;
+  size: number;
+}) {
   return (
     <View
       style={[
@@ -58,10 +58,9 @@ export function SkeletonPill({
   size,
   blend,
   style,
-}: ViewStyle &
-  SkeletonProps & {
-    size: number;
-  }) {
+}: SkeletonProps & {
+  size: number;
+}) {
   return (
     <View
       style={[

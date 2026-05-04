@@ -3,24 +3,36 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthSession } from '@modules/auth/hooks/useAuthSession';
 import { useOnboardingCheck } from '@modules/auth/hooks/useOnboardingCheck';
+import { useUserHasHouse } from '@modules/house/hooks/useUserHasHouse';
 import { AccountCoordinator } from '@modules/account/coordinator/AccountCoordinator';
 import { AuthCoordinator } from '@modules/auth/coordinator/AuthCoordinator';
+import { HouseCoordinator } from '@modules/house/coordinator/HouseCoordinator';
 
 export default function TabsLayout() {
   const { data: session, isLoading: isLoadingSession } = useAuthSession();
   const { data: needsOnboarding, isLoading: isLoadingOnboarding } = useOnboardingCheck();
+  const { hasHouse, isLoading: isLoadingHouses } = useUserHasHouse();
 
   useEffect(() => {
-    if (!isLoadingSession && !isLoadingOnboarding) {
+    if (!isLoadingSession && !isLoadingOnboarding && !isLoadingHouses) {
       if (!session) {
         AccountCoordinator.navigateToAuth();
       } else if (needsOnboarding) {
         AuthCoordinator.navigateToOnboarding();
+      } else if (!hasHouse) {
+        HouseCoordinator.navigateToHouseRequired();
       }
     }
-  }, [isLoadingSession, isLoadingOnboarding, session, needsOnboarding]);
+  }, [
+    isLoadingSession,
+    isLoadingOnboarding,
+    isLoadingHouses,
+    session,
+    needsOnboarding,
+    hasHouse,
+  ]);
 
-  return isLoadingSession || isLoadingOnboarding ? null : (
+  return isLoadingSession || isLoadingOnboarding || isLoadingHouses ? null : (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#007AFF',

@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { HouseCoordinator } from '@modules/house/coordinator/HouseCoordinator';
 
 export class AuthCoordinator {
   static navigateToLogin() {
@@ -26,7 +27,6 @@ export class AuthCoordinator {
   }
 
   static navigateToCreateHouse() {
-    // TODO: Implement create house logic
-    router.replace('/(tabs)/home');
+    HouseCoordinator.navigateToCreateHouse();
   }
 }

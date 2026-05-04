@@ -21,6 +21,7 @@ import {
   THEME_VALUE_AUTO,
   DEFAULT_NOTIFICATIONS_ENABLED,
   ERROR_MESSAGE_USER_NOT_AUTHENTICATED,
+  LANGUAGE_VALUE_ES,
 } from '../constants/account.constants';
 import { RQKEY_PREFERENCES } from './useUserPreferences';
 import type {
@@ -66,49 +67,104 @@ export const useUpdateUserPreferences = () => {
         throw new Error(ERROR_MESSAGE_USER_NOT_AUTHENTICATED);
       }
 
+      let existingPreferences = queryClient.getQueryData<UserPreferences | null>(
+        RQKEY_PREFERENCES,
+      );
+
+      if (!existingPreferences) {
+        const { data: dbData, error: fetchError } = await supabase
+          .from(DB_TABLE_USER_PREFERENCES)
+          .select('*')
+          .eq(DB_FIELD_USER_ID, session.user.id)
+          .single();
+
+        if (fetchError && fetchError.code !== 'PGRST116') {
+          logger.error(fetchError);
+        }
+
+        if (dbData) {
+          existingPreferences = mapUserPreferencesFromDb(dbData);
+        }
+      }
+
+      const defaultValues = {
+        [DB_FIELD_THEME]: THEME_VALUE_AUTO,
+        [DB_FIELD_LANGUAGE]: LANGUAGE_VALUE_ES,
+        [DB_FIELD_NOTIFICATIONS_ENABLED]: DEFAULT_NOTIFICATIONS_ENABLED,
+        [DB_FIELD_NOTIFICATIONS_TASK_REMINDER_ENABLED]: true,
+        [DB_FIELD_NOTIFICATIONS_TASK_VALIDATION_ENABLED]: true,
+        [DB_FIELD_NOTIFICATIONS_MEMBER_JOINED_ENABLED]: true,
+        [DB_FIELD_NOTIFICATIONS_MEMBER_LEFT_ENABLED]: true,
+      };
       const updateData: any = {
         [DB_FIELD_USER_ID]: session.user.id,
+        [DB_FIELD_THEME]:
+          params.theme !== undefined
+            ? params.theme
+            : (existingPreferences?.theme ?? defaultValues[DB_FIELD_THEME]),
+        [DB_FIELD_LANGUAGE]:
+          params.language !== undefined
+            ? params.language
+            : (existingPreferences?.language ?? defaultValues[DB_FIELD_LANGUAGE]),
+        [DB_FIELD_NOTIFICATIONS_ENABLED]:
+          params.notificationsEnabled !== undefined
+            ? params.notificationsEnabled
+            : (existingPreferences?.notificationsEnabled ??
+              defaultValues[DB_FIELD_NOTIFICATIONS_ENABLED]),
+        [DB_FIELD_NOTIFICATIONS_TASK_REMINDER_ENABLED]:
+          params.notificationsTaskReminderEnabled !== undefined
+            ? params.notificationsTaskReminderEnabled
+            : (existingPreferences?.notificationsTaskReminderEnabled ??
+              defaultValues[DB_FIELD_NOTIFICATIONS_TASK_REMINDER_ENABLED]),
+        [DB_FIELD_NOTIFICATIONS_TASK_VALIDATION_ENABLED]:
+          params.notificationsTaskValidationEnabled !== undefined
+            ? params.notificationsTaskValidationEnabled
+            : (existingPreferences?.notificationsTaskValidationEnabled ??
+              defaultValues[DB_FIELD_NOTIFICATIONS_TASK_VALIDATION_ENABLED]),
+        [DB_FIELD_NOTIFICATIONS_MEMBER_JOINED_ENABLED]:
+          params.notificationsMemberJoinedEnabled !== undefined
+            ? params.notificationsMemberJoinedEnabled
+            : (existingPreferences?.notificationsMemberJoinedEnabled ??
+              defaultValues[DB_FIELD_NOTIFICATIONS_MEMBER_JOINED_ENABLED]),
+        [DB_FIELD_NOTIFICATIONS_MEMBER_LEFT_ENABLED]:
+          params.notificationsMemberLeftEnabled !== undefined
+            ? params.notificationsMemberLeftEnabled
+            : (existingPreferences?.notificationsMemberLeftEnabled ??
+              defaultValues[DB_FIELD_NOTIFICATIONS_MEMBER_LEFT_ENABLED]),
       };
-
-      if (params.theme !== undefined) {
-        updateData[DB_FIELD_THEME] = params.theme;
-      }
-
-      if (params.language !== undefined) {
-        updateData[DB_FIELD_LANGUAGE] = params.language;
-      }
-
-      if (params.notificationsEnabled !== undefined) {
-        updateData[DB_FIELD_NOTIFICATIONS_ENABLED] = params.notificationsEnabled;
-      }
-
-      if (params.notificationsTaskReminderEnabled !== undefined) {
-        updateData[DB_FIELD_NOTIFICATIONS_TASK_REMINDER_ENABLED] =
-          params.notificationsTaskReminderEnabled;
-      }
-
-      if (params.notificationsTaskValidationEnabled !== undefined) {
-        updateData[DB_FIELD_NOTIFICATIONS_TASK_VALIDATION_ENABLED] =
-          params.notificationsTaskValidationEnabled;
-      }
-
-      if (params.notificationsMemberJoinedEnabled !== undefined) {
-        updateData[DB_FIELD_NOTIFICATIONS_MEMBER_JOINED_ENABLED] =
-          params.notificationsMemberJoinedEnabled;
-      }
-
-      if (params.notificationsMemberLeftEnabled !== undefined) {
-        updateData[DB_FIELD_NOTIFICATIONS_MEMBER_LEFT_ENABLED] =
-          params.notificationsMemberLeftEnabled;
-      }
-
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from(DB_TABLE_USER_PREFERENCES)
         .upsert(updateData, {
           onConflict: DB_FIELD_USER_ID,
         })
         .select()
         .single();
+
+      if (error?.code === '23503') {
+        const { error: insertError } = await supabase
+          .from(DB_TABLE_USER_PREFERENCES)
+          .insert({ [DB_FIELD_USER_ID]: session.user.id });
+
+        if (insertError) {
+          logger.error(insertError);
+          throw insertError;
+        }
+
+        const { data: retryData, error: retryError } = await supabase
+          .from(DB_TABLE_USER_PREFERENCES)
+          .upsert(updateData, {
+            onConflict: DB_FIELD_USER_ID,
+          })
+          .select()
+          .single();
+
+        if (retryError) {
+          logger.error(retryError);
+          throw retryError;
+        }
+
+        data = retryData;
+      }
 
       if (error) {
         logger.error(error);

@@ -5,6 +5,7 @@ import { Button, ButtonText, ButtonSpinner } from '@gluestack-ui/themed';
 import { useAuthSession } from '@modules/auth/hooks/useAuthSession';
 import { useUploadAvatar } from '@modules/account/hooks/useUploadAvatar';
 import { useUpdateProfile } from '@modules/account/hooks/useUpdateProfile';
+import { useEnsureUserPreferences } from '@modules/account/hooks/useEnsureUserPreferences';
 import { OnboardingPersonalForm } from '@modules/auth/components/OnboardingPersonalForm';
 import { HouseActionSelector } from '@modules/auth/components/HouseActionSelector';
 import { AuthCoordinator } from '@modules/auth/coordinator/AuthCoordinator';
@@ -20,6 +21,7 @@ export const OnboardingScreen: React.FC = () => {
   const { data: session } = useAuthSession();
   const { mutateAsync: uploadAvatar, isPending: isUploadingAvatar } = useUploadAvatar();
   const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useUpdateProfile();
+  const { ensurePreferences } = useEnsureUserPreferences();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(1);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
@@ -97,6 +99,8 @@ export const OnboardingScreen: React.FC = () => {
 
     try {
       const finalAvatarUrl = await getAvatarUrl();
+
+      await ensurePreferences();
 
       await updateProfile({
         fullName: fullName || undefined,
